@@ -163,6 +163,28 @@ export function BradInterface() {
     }, 1500)
   }
 
+  /* Get response from OpenAI */
+  const getLLMResponse = async (userMessage: string): Promise<string> => {
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMessage }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        return err.error || "Server error"
+      }
+
+      const data = await res.json()
+      console.log("response", data.text)
+      return data.text || "No response"
+    } catch (_) {
+      return "Network error"
+    }
+  };
+
   const getBradResponse = (
     userMessage: string,
     keywords: string[],
@@ -293,7 +315,7 @@ export function BradInterface() {
     })
   }
 
-  const handleSendMessage = (messageText?: string) => {
+  const handleSendMessage = async (messageText?: string) => {
     const textToSend = messageText || prompt
     if (!textToSend.trim()) return
 
@@ -321,27 +343,21 @@ export function BradInterface() {
       setProjectMemory((prev) => [...prev.slice(-4), newMemory])
     }
 
+    const responseText = await getLLMResponse(textToSend)
+    const bradResponse: Message = {
+      id: (Date.now() + 1).toString(),
+      text: responseText,
+      sender: "brad",
+      timestamp: new Date(),
+    }
+    setMessages((prev) => [...prev, bradResponse])
+    setIsTyping(false)
+    setShowQuickReplies(true)
 
-    setTimeout(
-      () => {
-        const response = getBradResponse(textToSend, keywords)
-        const bradResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          text: response.text,
-          sender: "brad",
-          timestamp: new Date(),
-          isMemoryReference: response.isMemoryReference,
-        }
-        setMessages((prev) => [...prev, bradResponse])
-        setIsTyping(false)
-        setShowQuickReplies(true)
-
-        if (response.shouldStartBuilding) {
-          setTimeout(() => startBuildingProcess(keywords), 1000)
-        }
-      },
-      1500 + Math.random() * 1000,
-    )
+    // TODO: Add this back in
+    // if (response.shouldStartBuilding) {
+    //   setTimeout(() => startBuildingProcess(keywords), 1000)
+    // }
   }
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -623,9 +639,9 @@ export function BradInterface() {
               <h2 className="text-white font-medium flex items-center gap-2">
                 Brad.ai
                 {projectMemory.length > 0 && (
-                  <Brain className="w-3 h-3 text-amber-400" title="Remembers your projects" />
+                  <Brain className="w-3 h-3 text-amber-400" />
                 )}
-                {isBuildMode && <Code className="w-3 h-3 text-cyan-400" title="Building mode" />}
+                {isBuildMode && <Code className="w-3 h-3 text-cyan-400" />}
               </h2>
               <p className="text-xs text-gray-400">
                 {isBuildMode ? `Building your project • ${buildProgress}% complete` : "Your personal designer • Online"}
