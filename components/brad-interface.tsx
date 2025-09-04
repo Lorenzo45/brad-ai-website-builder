@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useEffect, useRef } from "react"
+import { useBradChat } from "@/hooks/useBradChat"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ArrowUp, MoreVertical, Phone, Video, Paperclip, Brain, Code, Monitor } from "lucide-react"
@@ -19,31 +20,21 @@ interface Message {
 
 export function BradInterface() {
   const [prompt, setPrompt] = useState("")
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      text: "Hey! 👋 I'm Brad, your personal designer. Sarah from the team introduced us - she mentioned you might need some design work?",
-      sender: "brad",
-    },
-    {
-      id: "2",
-      text: "I'm basically like having a designer on retainer - always here when you need something built, redesigned, or just want to bounce ideas around.",
-      sender: "brad",
-    },
-    {
-      id: "3",
-      text: "What's the first thing you'd like to work on together?",
-      sender: "brad",
-    },
-  ])
-  const [isTyping, setIsTyping] = useState(false)
-  const [showQuickReplies, setShowQuickReplies] = useState(true)
+  const {
+    messages,
+    isTyping,
+    showQuickReplies,
+    fileInputRef,
+    sendMessage,
+    handleFileUpload,
+    getQuickReplies,
+    addMessage,
+  } = useBradChat()
+  
   const [isBuildMode, setIsBuildMode] = useState(false)
   const [buildProgress, setBuildProgress] = useState(0)
   const [showWebsitePreview, setShowWebsitePreview] = useState(false)
-  const [websiteType, setWebsiteType] = useState<string>("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [isDesignMode, setIsDesignMode] = useState(false)
   const [selectedElement, setSelectedElement] = useState<string | null>(null)
   const [designPrompt, setDesignPrompt] = useState("")
@@ -91,7 +82,7 @@ export function BradInterface() {
       sender: "user",
     }
 
-    setMessages((prev) => [...prev, designMessage])
+    addMessage(designMessage)
     setDesignPrompt("")
     setSelectedElement(null)
 
@@ -101,38 +92,16 @@ export function BradInterface() {
         text: `Perfect! I've updated the ${selectedElement?.replace("-", " ")} based on your feedback. The changes are looking fresh! ✨`,
         sender: "brad",
       }
-      setMessages((prev) => [...prev, bradResponse])
+      addMessage(bradResponse)
     }, 1500)
   }
 
-  /* Get response from OpenAI */
-  const getLLMResponse = async (userMessage: string): Promise<string> => {
-    try {
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
-      })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        return err.error || "Server error"
-      }
-
-      const data = await res.json()
-      console.log("response", data.text)
-      return data.text || "No response"
-    } catch (_) {
-      return "Network error"
-    }
-  };
 
 
 
-  const startBuildingProcess = (keywords: string[]) => {
+  const startBuildingProcess = () => {
     setIsBuildMode(true)
     setBuildProgress(0)
-    setWebsiteType(keywords[0] || "modern")
     setShowWebsitePreview(false)
 
     const buildSteps = [
@@ -161,7 +130,7 @@ export function BradInterface() {
             sender: "brad",
             isBuildUpdate: true,
           }
-          setMessages((prev) => [...prev, buildMessage])
+          addMessage(buildMessage)
 
           if (step.progress === 100) {
             setTimeout(() => setShowWebsitePreview(true), 1000)
@@ -176,26 +145,8 @@ export function BradInterface() {
     const textToSend = messageText || prompt
     if (!textToSend.trim()) return
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      text: textToSend,
-      sender: "user",
-    }
-
-    setMessages((prev) => [...prev, userMessage])
+    await sendMessage(textToSend)
     setPrompt("")
-    setIsTyping(true)
-    setShowQuickReplies(false)
-
-    const responseText = await getLLMResponse(textToSend)
-    const bradResponse: Message = {
-      id: (Date.now() + 1).toString(),
-      text: responseText,
-      sender: "brad",
-    }
-    setMessages((prev) => [...prev, bradResponse])
-    setIsTyping(false)
-    setShowQuickReplies(true)
 
     // TODO: Add this back in
     // if (response.shouldStartBuilding) {
@@ -203,41 +154,9 @@ export function BradInterface() {
     // }
   }
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) {
-      const fileMessage: Message = {
-        id: Date.now().toString(),
-        text: `📎 Shared: ${file.name}`,
-        sender: "user",
-      }
-      setMessages((prev) => [...prev, fileMessage])
-
-      setTimeout(() => {
-        const bradResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          text: "Perfect! I can see your file. This gives me great context for what you're looking for. Let me take a look and we can build something amazing together! 🎨",
-          sender: "brad",
-        }
-        setMessages((prev) => [...prev, bradResponse])
-      }, 2000)
-    }
-  }
 
 
 
-  const getQuickReplies = (): string[] => {
-    const lastBradMessage = messages.filter((m) => m.sender === "brad").slice(-1)[0]
-    if (!lastBradMessage) return []
-
-    if (lastBradMessage.text.includes("first thing")) {
-      return ["Landing page", "Portfolio site", "Mobile app", "Dashboard"]
-    }
-    if (lastBradMessage.text.includes("tell me more")) {
-      return ["Show examples", "I need help with colors", "Mobile-first design", "Something modern"]
-    }
-    return ["Sounds great!", "Tell me more", "Show me examples", "Let's do it"]
-  }
 
   const renderWebsitePreview = () => {
     const baseClasses = "w-full h-full bg-white overflow-hidden overflow-y-auto"
