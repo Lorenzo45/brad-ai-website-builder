@@ -12,16 +12,10 @@ interface Message {
   id: string
   text: string
   sender: "user" | "brad"
-  keywords?: string[]
   isMemoryReference?: boolean
   isBuildUpdate?: boolean
 }
 
-interface ProjectMemory {
-  id: string
-  keywords: string[]
-  context: string
-}
 
 export function BradInterface() {
   const [prompt, setPrompt] = useState("")
@@ -44,7 +38,6 @@ export function BradInterface() {
   ])
   const [isTyping, setIsTyping] = useState(false)
   const [showQuickReplies, setShowQuickReplies] = useState(true)
-  const [projectMemory, setProjectMemory] = useState<ProjectMemory[]>([])
   const [isBuildMode, setIsBuildMode] = useState(false)
   const [buildProgress, setBuildProgress] = useState(0)
   const [showWebsitePreview, setShowWebsitePreview] = useState(false)
@@ -64,50 +57,6 @@ export function BradInterface() {
     scrollToBottom()
   }, [messages])
 
-  const extractKeywords = (text: string): string[] => {
-    const keyDesignWords = [
-      "minimal",
-      "modern",
-      "clean",
-      "elegant",
-      "simple",
-      "sleek",
-      "professional",
-      "portfolio",
-      "website",
-      "landing",
-      "dashboard",
-      "app",
-      "blog",
-      "store",
-      "e-commerce",
-      "ecommerce",
-      "saas",
-      "startup",
-      "business",
-      "corporate",
-      "responsive",
-      "mobile",
-      "desktop",
-      "ui",
-      "ux",
-      "interface",
-      "design",
-      "dark",
-      "light",
-      "colorful",
-      "creative",
-      "artistic",
-      "bold",
-    ]
-
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, " ")
-      .split(/\s+/)
-      .filter((word) => keyDesignWords.includes(word))
-      .slice(0, 3)
-  }
 
   const handleElementClick = (elementType: string, elementId: string) => {
     if (isDesignMode) {
@@ -178,91 +127,7 @@ export function BradInterface() {
     }
   };
 
-  const getBradResponse = (
-    userMessage: string,
-    keywords: string[],
-  ): { text: string; isMemoryReference: boolean; shouldStartBuilding: boolean } => {
-    const relatedMemory = projectMemory.find((memory) => memory.keywords.some((keyword) => keywords.includes(keyword)))
 
-    const buildTriggers = [
-      "build",
-      "create",
-      "make",
-      "design",
-      "start",
-      "let's do it",
-      "sounds great",
-      "do it",
-      "go ahead",
-      "yes",
-    ]
-    const shouldStartBuilding =
-      buildTriggers.some((trigger) => userMessage.toLowerCase().includes(trigger)) ||
-      (keywords.length > 0 &&
-        (userMessage.toLowerCase().includes("build") || userMessage.toLowerCase().includes("create")))
-
-    if (relatedMemory && Math.random() > 0.3) {
-      const memoryResponses = [
-        `Oh! This reminds me of ${relatedMemory.context} we discussed before. Building on that experience... 🧠`,
-        `I remember we talked about ${relatedMemory.context} earlier. Let's take that to the next level! ✨`,
-        `Perfect timing! This connects to our previous ${relatedMemory.context} conversation. I've got some ideas brewing... 💡`,
-      ]
-      return {
-        text: memoryResponses[Math.floor(Math.random() * memoryResponses.length)],
-        isMemoryReference: true,
-        shouldStartBuilding,
-      }
-    }
-
-    if (shouldStartBuilding && keywords.length === 0) {
-      const buildResponses = [
-        "Alright, let's get building! I'll whip up something awesome based on our conversation 🚀",
-        "Time to make some magic happen! Let me start crafting something for you ✨",
-        "Perfect! I'm already getting excited about what we're going to create together 🎨",
-      ]
-      return {
-        text: buildResponses[Math.floor(Math.random() * buildResponses.length)],
-        isMemoryReference: false,
-        shouldStartBuilding: true,
-      }
-    }
-
-    if (keywords.length === 0) {
-      return {
-        text: "Interesting! Tell me more about what you have in mind. I'm all ears 👂",
-        isMemoryReference: false,
-        shouldStartBuilding: false,
-      }
-    }
-
-    const responses = {
-      minimal:
-        "Ah, a fellow minimalist! Clean lines, lots of white space, and that 'less is more' philosophy. I'm totally here for it ✨",
-      portfolio:
-        "Portfolio time! Let's make you look absolutely legendary. What field are you in? I want to showcase your work perfectly 🎨",
-      ecommerce:
-        "Ka-ching! 💰 E-commerce is my jam. Are we talking fashion, tech, handmade goods? I'll make it convert like crazy",
-      dashboard:
-        "Dashboards are like digital cockpits - I love making data beautiful and actionable. What kind of data are we visualizing? 📊",
-      landing:
-        "Landing pages that convert visitors into customers? Say no more! What's the main goal - signups, sales, downloads? 🚀",
-      modern:
-        "Modern design coming right up! Think clean typography, subtle animations, and that cutting-edge feel that makes people go 'wow' ✨",
-      dark: "Dark mode enthusiast detected! *adjusts designer glasses* Nothing beats that sleek, mysterious vibe. Easy on the eyes too 🌙",
-      saas: "SaaS vibes! Let's build something that screams 'we're the future of [your industry]'. Professional but approachable, right? 💼",
-      blog: "Time to share your thoughts with the world! Personal blog or business? I'll make sure your content shines ✍️",
-      app: "App development mode: ON! Mobile-first or web app? Either way, users are going to love the experience we create 📱",
-    }
-
-    const lastKeyword = keywords[keywords.length - 1]
-    return {
-      text:
-        responses[lastKeyword as keyof typeof responses] ||
-        `I see you're thinking ${lastKeyword}... tell me more! I'm already getting some ideas 💡`,
-      isMemoryReference: false,
-      shouldStartBuilding,
-    }
-  }
 
   const startBuildingProcess = (keywords: string[]) => {
     setIsBuildMode(true)
@@ -311,27 +176,16 @@ export function BradInterface() {
     const textToSend = messageText || prompt
     if (!textToSend.trim()) return
 
-    const keywords = extractKeywords(textToSend)
     const userMessage: Message = {
       id: Date.now().toString(),
       text: textToSend,
       sender: "user",
-      keywords,
     }
 
     setMessages((prev) => [...prev, userMessage])
     setPrompt("")
     setIsTyping(true)
     setShowQuickReplies(false)
-
-    if (keywords.length > 0) {
-      const newMemory: ProjectMemory = {
-        id: Date.now().toString(),
-        keywords,
-        context: keywords.join(" + ") + " project",
-      }
-      setProjectMemory((prev) => [...prev.slice(-4), newMemory])
-    }
 
     const responseText = await getLLMResponse(textToSend)
     const bradResponse: Message = {
@@ -618,9 +472,6 @@ export function BradInterface() {
             <div>
               <h2 className="text-white font-medium flex items-center gap-2">
                 Brad.ai
-                {projectMemory.length > 0 && (
-                  <Brain className="w-3 h-3 text-amber-400" />
-                )}
                 {isBuildMode && <Code className="w-3 h-3 text-cyan-400" />}
               </h2>
               <p className="text-xs text-gray-400">
@@ -672,18 +523,6 @@ export function BradInterface() {
                     </div>
                   )}
                   <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
-                  {message.keywords && message.keywords.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {message.keywords.map((keyword, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-0.5 text-xs bg-amber-500/80 text-amber-100 rounded-full border border-amber-400/50"
-                        >
-                          {keyword}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               </div>
             </motion.div>
