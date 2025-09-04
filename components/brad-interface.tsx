@@ -14,7 +14,6 @@ interface Message {
   sender: "user" | "brad"
   timestamp: Date
   keywords?: string[]
-  status?: "sent" | "delivered" | "read"
   isMemoryReference?: boolean
   isBuildUpdate?: boolean
 }
@@ -34,21 +33,18 @@ export function BradInterface() {
       text: "Hey! 👋 I'm Brad, your personal designer. Sarah from the team introduced us - she mentioned you might need some design work?",
       sender: "brad",
       timestamp: new Date(Date.now() - 300000),
-      status: "read",
     },
     {
       id: "2",
       text: "I'm basically like having a designer on retainer - always here when you need something built, redesigned, or just want to bounce ideas around.",
       sender: "brad",
       timestamp: new Date(Date.now() - 240000),
-      status: "read",
     },
     {
       id: "3",
       text: "What's the first thing you'd like to work on together?",
       sender: "brad",
       timestamp: new Date(Date.now() - 180000),
-      status: "read",
     },
   ])
   const [isTyping, setIsTyping] = useState(false)
@@ -150,7 +146,6 @@ export function BradInterface() {
       text: `🎨 Design change for ${selectedElement.replace("-", " ")}: ${designPrompt}`,
       sender: "user",
       timestamp: new Date(),
-      status: "sent",
     }
 
     setMessages((prev) => [...prev, designMessage])
@@ -163,7 +158,6 @@ export function BradInterface() {
         text: `Perfect! I've updated the ${selectedElement?.replace("-", " ")} based on your feedback. The changes are looking fresh! ✨`,
         sender: "brad",
         timestamp: new Date(),
-        status: "read",
       }
       setMessages((prev) => [...prev, bradResponse])
     }, 1500)
@@ -286,7 +280,6 @@ export function BradInterface() {
             text: step.message,
             sender: "brad",
             timestamp: new Date(),
-            status: "read",
             isBuildUpdate: true,
           }
           setMessages((prev) => [...prev, buildMessage])
@@ -311,7 +304,6 @@ export function BradInterface() {
       sender: "user",
       timestamp: new Date(),
       keywords,
-      status: "sent",
     }
 
     setMessages((prev) => [...prev, userMessage])
@@ -329,13 +321,6 @@ export function BradInterface() {
       setProjectMemory((prev) => [...prev.slice(-4), newMemory])
     }
 
-    setTimeout(() => {
-      setMessages((prev) => prev.map((msg) => (msg.id === userMessage.id ? { ...msg, status: "delivered" } : msg)))
-    }, 500)
-
-    setTimeout(() => {
-      setMessages((prev) => prev.map((msg) => (msg.id === userMessage.id ? { ...msg, status: "read" } : msg)))
-    }, 1000)
 
     setTimeout(
       () => {
@@ -345,7 +330,6 @@ export function BradInterface() {
           text: response.text,
           sender: "brad",
           timestamp: new Date(),
-          status: "read",
           isMemoryReference: response.isMemoryReference,
         }
         setMessages((prev) => [...prev, bradResponse])
@@ -368,7 +352,6 @@ export function BradInterface() {
         text: `📎 Shared: ${file.name}`,
         sender: "user",
         timestamp: new Date(),
-        status: "sent",
       }
       setMessages((prev) => [...prev, fileMessage])
 
@@ -378,7 +361,6 @@ export function BradInterface() {
           text: "Perfect! I can see your file. This gives me great context for what you're looking for. Let me take a look and we can build something amazing together! 🎨",
           sender: "brad",
           timestamp: new Date(),
-          status: "read",
         }
         setMessages((prev) => [...prev, bradResponse])
       }, 2000)
@@ -706,13 +688,6 @@ export function BradInterface() {
                     >
                       {formatTime(message.timestamp)}
                     </div>
-                    {message.sender === "user" && message.status && (
-                      <div className="text-xs text-black/70 flex-shrink-0">
-                        {message.status === "sent" && "✓"}
-                        {message.status === "delivered" && "✓✓"}
-                        {message.status === "read" && <span className="text-blue-600">✓✓</span>}
-                      </div>
-                    )}
                   </div>
                   {message.keywords && message.keywords.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
