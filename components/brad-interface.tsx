@@ -691,7 +691,7 @@ export function BradInterface() {
                       <span className="text-xs text-cyan-400">Building update</span>
                     </div>
                   )}
-                  <p className="text-sm leading-relaxed break-words">{message.text}</p>
+                  <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
                   <div className={`flex items-center justify-between mt-1 gap-2`}>
                     <div
                       className={`text-xs ${
