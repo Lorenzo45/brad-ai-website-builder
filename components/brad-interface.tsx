@@ -5,7 +5,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowUp, MoreVertical, Phone, Video, Paperclip, Smile, Brain, Code, Monitor } from "lucide-react"
+import { ArrowUp, MoreVertical, Phone, Video, Paperclip, Brain, Code, Monitor } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface Message {
@@ -15,7 +15,6 @@ interface Message {
   timestamp: Date
   keywords?: string[]
   status?: "sent" | "delivered" | "read"
-  reactions?: { emoji: string; count: number }[]
   isMemoryReference?: boolean
   isBuildUpdate?: boolean
 }
@@ -54,7 +53,6 @@ export function BradInterface() {
   ])
   const [isTyping, setIsTyping] = useState(false)
   const [showQuickReplies, setShowQuickReplies] = useState(true)
-  const [showReactions, setShowReactions] = useState<string | null>(null)
   const [projectMemory, setProjectMemory] = useState<ProjectMemory[]>([])
   const [isBuildMode, setIsBuildMode] = useState(false)
   const [buildProgress, setBuildProgress] = useState(0)
@@ -387,30 +385,6 @@ export function BradInterface() {
     }
   }
 
-  const addReaction = (messageId: string, emoji: string) => {
-    setMessages((prev) =>
-      prev.map((msg) => {
-        if (msg.id === messageId) {
-          const existingReactions = msg.reactions || []
-          const existingReaction = existingReactions.find((r) => r.emoji === emoji)
-
-          if (existingReaction) {
-            return {
-              ...msg,
-              reactions: existingReactions.map((r) => (r.emoji === emoji ? { ...r, count: r.count + 1 } : r)),
-            }
-          } else {
-            return {
-              ...msg,
-              reactions: [...existingReactions, { emoji, count: 1 }],
-            }
-          }
-        }
-        return msg
-      }),
-    )
-    setShowReactions(null)
-  }
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString("en-US", {
@@ -752,44 +726,7 @@ export function BradInterface() {
                       ))}
                     </div>
                   )}
-                  {message.reactions && message.reactions.length > 0 && (
-                    <div className="flex gap-1 mt-2">
-                      {message.reactions.map((reaction, index) => (
-                        <span
-                          key={index}
-                          className="px-2 py-1 text-xs bg-gray-700 rounded-full flex items-center gap-1"
-                        >
-                          {reaction.emoji} {reaction.count}
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="absolute top-1 -right-1 w-6 h-6 bg-[#2a2a2a] hover:bg-[#3a3a3a] opacity-0 group-hover:opacity-100 transition-opacity border border-[#3a3a3a]"
-                  onClick={() => setShowReactions(showReactions === message.id ? null : message.id)}
-                >
-                  <Smile className="w-3 h-3 text-gray-400" />
-                </Button>
-                {showReactions === message.id && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="absolute -top-12 -right-2 bg-[#2a2a2a] rounded-lg p-2 flex gap-1 shadow-lg border border-[#3a3a3a] z-10"
-                  >
-                    {["👍", "❤️", "😂", "😮", "😢", "🔥"].map((emoji) => (
-                      <button
-                        key={emoji}
-                        onClick={() => addReaction(message.id, emoji)}
-                        className="hover:bg-[#3a3a3a] p-1 rounded text-lg"
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
               </div>
             </motion.div>
           ))}
