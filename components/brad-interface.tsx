@@ -12,7 +12,6 @@ interface Message {
   id: string
   text: string
   sender: "user" | "brad"
-  timestamp: Date
   keywords?: string[]
   isMemoryReference?: boolean
   isBuildUpdate?: boolean
@@ -22,7 +21,6 @@ interface ProjectMemory {
   id: string
   keywords: string[]
   context: string
-  timestamp: Date
 }
 
 export function BradInterface() {
@@ -32,19 +30,16 @@ export function BradInterface() {
       id: "1",
       text: "Hey! 👋 I'm Brad, your personal designer. Sarah from the team introduced us - she mentioned you might need some design work?",
       sender: "brad",
-      timestamp: new Date(Date.now() - 300000),
     },
     {
       id: "2",
       text: "I'm basically like having a designer on retainer - always here when you need something built, redesigned, or just want to bounce ideas around.",
       sender: "brad",
-      timestamp: new Date(Date.now() - 240000),
     },
     {
       id: "3",
       text: "What's the first thing you'd like to work on together?",
       sender: "brad",
-      timestamp: new Date(Date.now() - 180000),
     },
   ])
   const [isTyping, setIsTyping] = useState(false)
@@ -145,7 +140,6 @@ export function BradInterface() {
       id: Date.now().toString(),
       text: `🎨 Design change for ${selectedElement.replace("-", " ")}: ${designPrompt}`,
       sender: "user",
-      timestamp: new Date(),
     }
 
     setMessages((prev) => [...prev, designMessage])
@@ -157,7 +151,6 @@ export function BradInterface() {
         id: (Date.now() + 1).toString(),
         text: `Perfect! I've updated the ${selectedElement?.replace("-", " ")} based on your feedback. The changes are looking fresh! ✨`,
         sender: "brad",
-        timestamp: new Date(),
       }
       setMessages((prev) => [...prev, bradResponse])
     }, 1500)
@@ -301,7 +294,6 @@ export function BradInterface() {
             id: `build-${Date.now()}-${index}`,
             text: step.message,
             sender: "brad",
-            timestamp: new Date(),
             isBuildUpdate: true,
           }
           setMessages((prev) => [...prev, buildMessage])
@@ -324,7 +316,6 @@ export function BradInterface() {
       id: Date.now().toString(),
       text: textToSend,
       sender: "user",
-      timestamp: new Date(),
       keywords,
     }
 
@@ -338,7 +329,6 @@ export function BradInterface() {
         id: Date.now().toString(),
         keywords,
         context: keywords.join(" + ") + " project",
-        timestamp: new Date(),
       }
       setProjectMemory((prev) => [...prev.slice(-4), newMemory])
     }
@@ -348,7 +338,6 @@ export function BradInterface() {
       id: (Date.now() + 1).toString(),
       text: responseText,
       sender: "brad",
-      timestamp: new Date(),
     }
     setMessages((prev) => [...prev, bradResponse])
     setIsTyping(false)
@@ -367,7 +356,6 @@ export function BradInterface() {
         id: Date.now().toString(),
         text: `📎 Shared: ${file.name}`,
         sender: "user",
-        timestamp: new Date(),
       }
       setMessages((prev) => [...prev, fileMessage])
 
@@ -376,7 +364,6 @@ export function BradInterface() {
           id: (Date.now() + 1).toString(),
           text: "Perfect! I can see your file. This gives me great context for what you're looking for. Let me take a look and we can build something amazing together! 🎨",
           sender: "brad",
-          timestamp: new Date(),
         }
         setMessages((prev) => [...prev, bradResponse])
       }, 2000)
@@ -384,13 +371,6 @@ export function BradInterface() {
   }
 
 
-  const formatTime = (date: Date) => {
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    })
-  }
 
   const getQuickReplies = (): string[] => {
     const lastBradMessage = messages.filter((m) => m.sender === "brad").slice(-1)[0]
@@ -692,19 +672,6 @@ export function BradInterface() {
                     </div>
                   )}
                   <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
-                  <div className={`flex items-center justify-between mt-1 gap-2`}>
-                    <div
-                      className={`text-xs ${
-                        message.sender === "user"
-                          ? "text-black/70"
-                          : message.isBuildUpdate
-                            ? "text-cyan-300/70"
-                            : "text-gray-500"
-                      } whitespace-nowrap`}
-                    >
-                      {formatTime(message.timestamp)}
-                    </div>
-                  </div>
                   {message.keywords && message.keywords.length > 0 && (
                     <div className="flex flex-wrap gap-1 mt-2">
                       {message.keywords.map((keyword, index) => (
