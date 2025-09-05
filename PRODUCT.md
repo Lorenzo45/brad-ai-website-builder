@@ -61,77 +61,68 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 
 ## Product Roadmap
 
-### Immediate Priority (Next Sprint)
+### High Priority - Conversational Agent Core
 
-- [ ] **Enhanced Message Types**
-  - [ ] Add support for code block rendering in messages
-  - [ ] Implement image message support for design assets
-  - [ ] Add message reactions/feedback system
+- [ ] **Smart Questioning System**
+  - [ ] Implement OpenAI's structured response framework
+  - [ ] Generate contextual follow-up questions to gather requirements
+  - [ ] Ask clarifying questions about design preferences, functionality, and scope
+  - [ ] Progressive disclosure of complexity based on user responses
 
-- [ ] **Improved File Handling**
-  - [ ] Support multiple file formats (images, design files, etc.)
-  - [ ] File preview within chat interface
-  - [ ] Drag-and-drop file upload functionality
+- [ ] **Intelligent Suggested Responses**
+  - [ ] Generate short, relevant clickable response options
+  - [ ] Context-aware suggestions based on current conversation state
+  - [ ] Dynamic suggestion generation using OpenAI structured outputs
+  - [ ] Quick selection for common design patterns and preferences
 
-### Short Term (1-2 Sprints)
+- [ ] **Agent Spec Management**
+  - [ ] Tool-based spec reading and writing system
+  - [ ] Internal todo/checklist management for the agent
+  - [ ] Spec validation and completeness checking
+  - [ ] Progress tracking of requirements gathering
 
-- [ ] **Advanced Design Mode**
-  - [ ] Real-time design editing with instant preview updates
-  - [ ] Color picker integration for element styling
-  - [ ] Typography adjustment tools
-  - [ ] Layout modification capabilities (margin, padding, positioning)
+- [ ] **Build Readiness Detection**
+  - [ ] Analyze spec completeness to determine when ready to build
+  - [ ] Proactively suggest moving to build phase when appropriate
+  - [ ] Confirmation workflow before transitioning to code generation
 
-- [ ] **Build System Enhancement**
-  - [ ] Actual code generation from design specifications
-  - [ ] Export functionality for generated code
-  - [ ] Integration with popular frameworks (React, Vue, etc.)
-  - [ ] Build error handling and debugging tools
+### Medium Priority - Visual Design Tools
 
-- [ ] **Memory System Expansion**
-  - [ ] Persistent memory across browser sessions
-  - [ ] Project-specific memory contexts
-  - [ ] Memory search and retrieval functionality
-  - [ ] Memory visualization in chat interface
+- [ ] **Color System**
+  - [ ] Color preview functionality in chat messages
+  - [ ] Interactive color picker component
+  - [ ] AI-generated color palette suggestions
+  - [ ] Color harmony and accessibility checking
 
-### Medium Term (3-5 Sprints)
+- [ ] **Enhanced Messaging**
+  - [ ] Code block rendering with syntax highlighting
+  - [ ] Rich message formatting for design specs
+  - [ ] Message threading for complex requirements
 
-- [ ] **Multi-Project Support**
-  - [ ] Project creation and management interface
-  - [ ] Project switching capabilities
-  - [ ] Project-specific chat histories
-  - [ ] Project templates and starter kits
+### Lower Priority - Code Generation
 
-- [ ] **Collaboration Features**
-  - [ ] Real-time collaboration on designs
-  - [ ] Comment system for design feedback
-  - [ ] Version control for design iterations
-  - [ ] Share links for design previews
+- [ ] **Spec-to-Code Generation**
+  - [ ] Generate functional code based on completed user spec
+  - [ ] Live preview updates with generated code
+  - [ ] Code export functionality
+  - [ ] Basic framework support (React focus initially)
 
-- [ ] **Advanced AI Capabilities**
-  - [ ] Image recognition for design reference uploads
-  - [ ] Voice input for design requests
-  - [ ] Multi-modal AI responses (text + images + code)
-  - [ ] Style transfer from reference images
+- [ ] **Preview Enhancements**
+  - [ ] Real-time code preview updates
+  - [ ] Mobile responsive preview modes
+  - [ ] Basic interaction simulation
 
-### Long Term (6+ Sprints)
+### Future Considerations
 
-- [ ] **Design System Integration**
-  - [ ] Custom design system creation
-  - [ ] Component library management
-  - [ ] Brand guideline enforcement
-  - [ ] Design token management
+- [ ] **Advanced AI Integration**
+  - [ ] Image reference analysis for design inspiration
+  - [ ] Multi-modal responses (text + visual mockups)
+  - [ ] Style transfer capabilities
 
-- [ ] **Advanced Export Options**
-  - [ ] Figma plugin integration
-  - [ ] Adobe XD export
-  - [ ] Production-ready code export
-  - [ ] Multiple framework support (React, Vue, Angular, Svelte)
-
-- [ ] **Enterprise Features**
-  - [ ] Team workspace management
-  - [ ] Advanced permission controls
-  - [ ] Audit logs and analytics
-  - [ ] Custom AI model training
+- [ ] **Collaboration**
+  - [ ] Spec sharing and collaboration
+  - [ ] Version control for design specifications
+  - [ ] Export to common design tools
 
 ## Development Workflow
 
