@@ -30,12 +30,28 @@ export function useBradChat() {
   const [smartReplies, setSmartReplies] = useState<SmartReply[]>([])
   const [conversationState, setConversationState] = useState<ConversationState>({
     phase: "discovery",
-    userIntent: "seeking design assistance",
-    completenessScore: 0
+    userIntent: "seeking design assistance"
   })
   const [designRequirements, setDesignRequirements] = useState<DesignRequirements>({})
   const [shouldTransitionToBuild, setShouldTransitionToBuild] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Calculate completeness score based on non-null design requirements
+  const calculateCompletenessScore = (): number => {
+    const allFields = ['subject', 'subjectName', 'purpose', 'targetAudience', 'preferredStyleAndInspiration', 'colorPreferences', 'functionalityNeeds', 'contentTypes']
+    
+    let completed = 0
+    
+    allFields.forEach(field => {
+      const value = designRequirements[field as keyof DesignRequirements]
+      if (value && (typeof value === 'string' ? value.trim() : Array.isArray(value) ? value.length > 0 : true)) {
+        completed++
+      }
+    })
+    
+    const score = completed / allFields.length
+    return isNaN(score) ? 0 : score
+  }
 
   const getStructuredResponse = async (userMessage: string): Promise<BradStructuredResponse | null> => {
     try {
@@ -150,10 +166,7 @@ export function useBradChat() {
     if (!lastBradMessage) return []
 
     if (lastBradMessage.text.includes("first thing")) {
-      return ["Landing page", "Portfolio site", "Dashboard"]
-    }
-    if (lastBradMessage.text.includes("tell me more")) {
-      return ["Show examples", "I need help with colors", "Mobile-first design", "Something modern"]
+      return ["Landing page", "Portfolio site", "E-Commerce", "Blog"]
     }
     return ["Sounds great!", "Tell me more", "Show me examples", "Let's do it"]
   }
@@ -166,6 +179,7 @@ export function useBradChat() {
     conversationState,
     designRequirements,
     shouldTransitionToBuild,
+    completenessScore: calculateCompletenessScore(),
     fileInputRef,
     sendMessage,
     handleFileUpload,

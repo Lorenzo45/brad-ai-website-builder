@@ -34,16 +34,17 @@ const bradResponseSchema = {
         designType: {
           type: "string",
           enum: ["landing-page", "portfolio", "dashboard", "e-commerce", "blog", "other"]
-        },
-        completenessScore: { type: "number", minimum: 0, maximum: 1 }
+        }
       },
-      required: ["phase", "userIntent", "designType", "completenessScore"],
+      required: ["phase", "userIntent", "designType"],
       additionalProperties: false
     },
     designRequirements: {
       type: "object",
       properties: {
         subject: { type: ["string", "null"] },
+        subjectName: { type: ["string", "null"] },
+        websiteType: { type: ["string", "null"] },
         purpose: { type: ["string", "null"] },
         targetAudience: { type: ["string", "null"] },
         preferredStyleAndInspiration: { type: ["string", "null"] },
@@ -51,7 +52,7 @@ const bradResponseSchema = {
         functionalityNeeds: { type: ["array", "null"], items: { type: "string" } },
         contentTypes: { type: ["array", "null"], items: { type: "string" } }
       },
-      required: ["subject", "purpose", "targetAudience", "preferredStyleAndInspiration", "colorPreferences", "functionalityNeeds", "contentTypes"],
+      required: ["subject", "subjectName", "websiteType", "purpose", "targetAudience", "preferredStyleAndInspiration", "colorPreferences", "functionalityNeeds", "contentTypes"],
       additionalProperties: false
     },
     suggestedActions: { type: "array", items: { type: "string" } },
@@ -90,12 +91,14 @@ ${requirementsContext}
 YOUR OBJECTIVES:
 1. Gather design requirements for a Webflow website from the user by asking questions
 2. Start by asking about the website subject (company name, personal brand, organization, or main topic)
-3. Provide an optional 1-2 word response (e.g. "Sounds good!") - primarily ask questions (one question at a time)
-4. Generate 3-5 convenient smart reply options that help users respond quickly
-5. Track design requirements and conversation state
-6. Reference previous messages when relevant
-7. Determine when enough information is gathered to suggest building a Webflow site
-8. Keep the conversation focused on Webflow design needs
+3. Ask for the specific name/title (subjectName) of the business, brand, or project
+4. Ask about the website type (landing page, portfolio, e-commerce, blog, dashboard, etc.)
+5. Provide an optional 1-2 word response (e.g. "Sounds good!") - primarily ask questions (one question at a time)
+6. Generate 3-5 convenient smart reply options that help users respond quickly
+7. Track design requirements and conversation state
+8. Reference previous messages when relevant
+9. Determine when enough information is gathered to suggest building a Webflow site
+10. Keep the conversation focused on Webflow design needs
 
 SMART REPLY STRATEGY:
 - Generate quick, convenient response options for any questions you ask in your response
@@ -109,6 +112,10 @@ CONVERSATION PHASES:
 - requirements: Gathering detailed specifications
 - refinement: Confirming details and filling gaps
 - ready-to-build: Requirements are complete enough to start building a Webflow site
+
+DETERMINING BUILD READINESS:
+- Consider the requirements complete when most core fields (subject, subjectName, websiteType, purpose, targetAudience, preferredStyleAndInspiration) are filled
+- Don't require every single field to be complete, but ensure you have enough information to build a meaningful website
 
 Keep responses brief and focused on completing the Webflow design process.`
 }
