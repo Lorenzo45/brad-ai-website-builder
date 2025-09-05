@@ -143,8 +143,8 @@ export function BradInterface() {
     const textToSend = messageText || prompt
     if (!textToSend.trim()) return
 
+    setPrompt("") // Clear immediately when user sends message
     await sendMessage(textToSend)
-    setPrompt("")
   }
 
   // Trigger build when requirements are ready
