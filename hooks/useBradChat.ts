@@ -1,12 +1,11 @@
 import { useState, useRef } from "react"
-
-interface Message {
-  id: string
-  text: string
-  sender: "user" | "brad"
-  isMemoryReference?: boolean
-  isBuildUpdate?: boolean
-}
+import type { 
+  Message, 
+  BradStructuredResponse, 
+  SmartReply, 
+  DesignRequirements,
+  ConversationState 
+} from "@/types/chat"
 
 export function useBradChat() {
   const [messages, setMessages] = useState<Message[]>([
@@ -28,26 +27,39 @@ export function useBradChat() {
   ])
   const [isTyping, setIsTyping] = useState(false)
   const [showQuickReplies, setShowQuickReplies] = useState(true)
+  const [smartReplies, setSmartReplies] = useState<SmartReply[]>([])
+  const [conversationState, setConversationState] = useState<ConversationState>({
+    phase: "discovery",
+    userIntent: "seeking design assistance",
+    completenessScore: 0
+  })
+  const [designRequirements, setDesignRequirements] = useState<DesignRequirements>({})
+  const [shouldTransitionToBuild, setShouldTransitionToBuild] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const getLLMResponse = async (userMessage: string): Promise<string> => {
+  const getStructuredResponse = async (userMessage: string): Promise<BradStructuredResponse | null> => {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({ 
+          message: userMessage,
+          conversationHistory: messages,
+          currentRequirements: designRequirements
+        }),
       })
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        return err.error || "Server error"
+      const result = await res.json()
+      
+      if (!res.ok || !result.success) {
+        console.error("API error:", result.error)
+        return null
       }
 
-      const data = await res.json()
-      console.log("response", data.text)
-      return data.text || "No response"
-    } catch (_) {
-      return "Network error"
+      return result.data
+    } catch (error) {
+      console.error("Network error:", error)
+      return null
     }
   }
 
@@ -67,15 +79,38 @@ export function useBradChat() {
     addMessage(userMessage)
     setIsTyping(true)
     setShowQuickReplies(false)
+    setSmartReplies([])
 
-    const responseText = await getLLMResponse(messageText)
-    const bradResponse: Message = {
-      id: (Date.now() + 1).toString(),
-      text: responseText,
-      sender: "brad",
+    const structuredResponse = await getStructuredResponse(messageText)
+    
+    if (structuredResponse) {
+      // Update conversation state and requirements
+      setConversationState(structuredResponse.conversationState)
+      setDesignRequirements(prev => ({
+        ...prev,
+        ...structuredResponse.designRequirements
+      }))
+      setSmartReplies(structuredResponse.smartReplies)
+      setShouldTransitionToBuild(structuredResponse.shouldTransitionToBuild)
+
+      const bradResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: structuredResponse.response,
+        sender: "brad",
+      }
+      
+      addMessage(bradResponse)
+    } else {
+      // Fallback message if structured response fails
+      const bradResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm sorry, I'm having trouble processing that right now. Can you try rephrasing your message?",
+        sender: "brad",
+      }
+      
+      addMessage(bradResponse)
     }
     
-    addMessage(bradResponse)
     setIsTyping(false)
     setShowQuickReplies(true)
   }
@@ -102,6 +137,15 @@ export function useBradChat() {
   }
 
   const getQuickReplies = (): string[] => {
+    // If we have smart replies from the structured response, use those
+    if (smartReplies.length > 0) {
+      return smartReplies
+        .sort((a, b) => b.relevanceScore - a.relevanceScore) // Sort by relevance descending
+        .slice(0, 5) // Take top 5
+        .map(reply => reply.text)
+    }
+
+    // Fallback to legacy quick replies if no smart replies
     const lastBradMessage = messages.filter((m) => m.sender === "brad").slice(-1)[0]
     if (!lastBradMessage) return []
 
@@ -118,6 +162,10 @@ export function useBradChat() {
     messages,
     isTyping,
     showQuickReplies,
+    smartReplies,
+    conversationState,
+    designRequirements,
+    shouldTransitionToBuild,
     fileInputRef,
     sendMessage,
     handleFileUpload,

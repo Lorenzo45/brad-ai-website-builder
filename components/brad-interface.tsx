@@ -6,16 +6,9 @@ import { useState, useEffect, useRef } from "react"
 import { useBradChat } from "@/hooks/useBradChat"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ArrowUp, MoreVertical, Phone, Video, Paperclip, Brain, Code, Monitor } from "lucide-react"
+import { ArrowUp, MoreVertical, Phone, Video, Paperclip, Brain, Code, Monitor, Lightbulb } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
-
-interface Message {
-  id: string
-  text: string
-  sender: "user" | "brad"
-  isMemoryReference?: boolean
-  isBuildUpdate?: boolean
-}
+import type { Message } from "@/types/chat"
 
 
 export function BradInterface() {
@@ -24,6 +17,9 @@ export function BradInterface() {
     messages,
     isTyping,
     showQuickReplies,
+    smartReplies,
+    conversationState,
+    shouldTransitionToBuild,
     fileInputRef,
     sendMessage,
     handleFileUpload,
@@ -99,6 +95,7 @@ export function BradInterface() {
 
 
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const startBuildingProcess = () => {
     setIsBuildMode(true)
     setBuildProgress(0)
@@ -277,7 +274,15 @@ export function BradInterface() {
                 {isBuildMode && <Code className="w-3 h-3 text-cyan-400" />}
               </h2>
               <p className="text-xs text-gray-400">
-                {isBuildMode ? `Building your project • ${buildProgress}% complete` : "Your personal designer • Online"}
+                {isBuildMode 
+                  ? `Building your project • ${buildProgress}% complete` 
+                  : shouldTransitionToBuild
+                  ? "Ready to build • All requirements gathered"
+                  : `${conversationState.phase === 'discovery' ? 'Learning about your project' : 
+                      conversationState.phase === 'requirements' ? 'Gathering specifications' : 
+                      conversationState.phase === 'refinement' ? 'Refining details' : 
+                      'Ready to start building'} • ${Math.round(conversationState.completenessScore * 100)}% complete`
+                }
               </p>
             </div>
           </div>
@@ -336,19 +341,62 @@ export function BradInterface() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="flex flex-wrap gap-2 px-2"
+                className="px-2"
               >
-                {getQuickReplies().map((reply, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSendMessage(reply)}
-                    className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#2a2a2a] hover:text-white text-sm px-6 py-2 h-auto min-w-fit whitespace-nowrap"
-                  >
-                    {reply}
-                  </Button>
-                ))}
+                {/* Smart Reply Options or Fallback Quick Replies */}
+                {smartReplies.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 px-1">
+                      <Lightbulb className="w-3 h-3 text-amber-400" />
+                      <span className="text-xs text-amber-400 font-medium">
+                        Quick replies:
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {getQuickReplies().map((reply, index) => {
+                        const replyObj = smartReplies.find(r => r.text === reply)
+                        const getCategoryColor = (category?: string) => {
+                          switch (category) {
+                            case "direct-answer": return "border-blue-500/30 bg-blue-500/5 hover:bg-blue-500/10"
+                            case "elaboration": return "border-purple-500/30 bg-purple-500/5 hover:bg-purple-500/10"
+                            case "alternative": return "border-green-500/30 bg-green-500/5 hover:bg-green-500/10"
+                            case "clarification": return "border-orange-500/30 bg-orange-500/5 hover:bg-orange-500/10"
+                            default: return "bg-[#1a1a1a] border-[#333] hover:bg-[#2a2a2a]"
+                          }
+                        }
+                        
+                        return (
+                          <Button
+                            key={index}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleSendMessage(reply)}
+                            className={`${getCategoryColor(replyObj?.category)} text-gray-300 hover:text-white text-sm px-4 py-2 h-auto min-w-fit whitespace-nowrap`}
+                          >
+                            {reply}
+                          </Button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Fallback when no smart replies */}
+                {smartReplies.length === 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {getQuickReplies().map((reply, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSendMessage(reply)}
+                        className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:bg-[#2a2a2a] hover:text-white text-sm px-6 py-2 h-auto min-w-fit whitespace-nowrap"
+                      >
+                        {reply}
+                      </Button>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

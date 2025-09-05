@@ -1,12 +1,141 @@
 import { NextResponse } from "next/server"
 import OpenAI from "openai"
+import type { ChatAPIRequest, BradStructuredResponse, DesignRequirements, Message } from "@/types/chat"
+
+// Define the structured output schema for OpenAI
+const bradResponseSchema = {
+  type: "object" as const,
+  properties: {
+    response: { type: "string" },
+    smartReplies: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          text: { type: "string" },
+          category: { 
+            type: "string",
+            enum: ["direct-answer", "elaboration", "alternative", "clarification"]
+          },
+          relevanceScore: { type: "number", minimum: 0, maximum: 1 }
+        },
+        required: ["text", "category", "relevanceScore"],
+        additionalProperties: false
+      }
+    },
+    conversationState: {
+      type: "object",
+      properties: {
+        phase: { 
+          type: "string",
+          enum: ["discovery", "requirements", "refinement", "ready-to-build"]
+        },
+        userIntent: { type: "string" },
+        designType: {
+          type: "string",
+          enum: ["landing-page", "portfolio", "dashboard", "mobile-app", "e-commerce", "blog", "other"]
+        },
+        completenessScore: { type: "number", minimum: 0, maximum: 1 }
+      },
+      required: ["phase", "userIntent", "designType", "completenessScore"],
+      additionalProperties: false
+    },
+    contextReferences: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          messageId: { type: "string" },
+          relevanceScore: { type: "number", minimum: 0, maximum: 1 },
+          contentSnippet: { type: "string" }
+        },
+        required: ["messageId", "relevanceScore", "contentSnippet"],
+        additionalProperties: false
+      }
+    },
+    designRequirements: {
+      type: "object",
+      properties: {
+        purpose: { type: ["string", "null"] },
+        targetAudience: { type: ["string", "null"] },
+        preferredStyle: { type: ["string", "null"] },
+        colorPreferences: { type: ["array", "null"], items: { type: "string" } },
+        functionalityNeeds: { type: ["array", "null"], items: { type: "string" } },
+        contentTypes: { type: ["array", "null"], items: { type: "string" } },
+        devicePriorities: { 
+          type: ["array", "null"], 
+          items: { type: "string", enum: ["desktop", "mobile", "tablet"] }
+        },
+        inspiration: { type: ["string", "null"] }
+      },
+      required: ["purpose", "targetAudience", "preferredStyle", "colorPreferences", "functionalityNeeds", "contentTypes", "devicePriorities", "inspiration"],
+      additionalProperties: false
+    },
+    suggestedActions: { type: "array", items: { type: "string" } },
+    confidenceScore: { type: "number", minimum: 0, maximum: 1 },
+    shouldTransitionToBuild: { type: "boolean" }
+  },
+  required: [
+    "response", 
+    "smartReplies", 
+    "conversationState", 
+    "contextReferences",
+    "designRequirements",
+    "suggestedActions", 
+    "confidenceScore",
+    "shouldTransitionToBuild"
+  ],
+  additionalProperties: false
+}
+
+function buildSystemPrompt(conversationHistory: Message[], currentRequirements?: DesignRequirements): string {
+  const historyContext = conversationHistory.slice(-5).map(msg => 
+    `${msg.sender}: ${msg.text}`
+  ).join('\n')
+
+  const requirementsContext = currentRequirements ? 
+    `Current requirements gathered: ${JSON.stringify(currentRequirements, null, 2)}` : 
+    'No requirements gathered yet.'
+
+  return `You are Brad, a friendly and expert AI web design assistant. Your role is to help users design websites by asking smart, contextual questions to understand their needs.
+
+CONVERSATION CONTEXT:
+${historyContext}
+
+CURRENT REQUIREMENTS:
+${requirementsContext}
+
+YOUR OBJECTIVES:
+1. Analyze the user's message and conversation history
+2. Provide a helpful, conversational response as Brad that naturally asks questions when needed (only ask one question at a time)
+3. Generate 3-5 convenient smart reply options that help users respond quickly
+4. Track design requirements and conversation state
+5. Reference previous messages when relevant
+6. Determine when enough information is gathered to suggest building
+
+SMART REPLY STRATEGY:
+- Generate quick, convenient response options for any questions you ask in your response
+- Include direct answers, elaborations, alternatives, and clarification options
+- Make replies specific to the context (e.g., if asking about website purpose: "Myself", "My business", "A group")
+- Prioritize the most common/likely user responses
+- Keep replies concise and actionable
+
+CONVERSATION PHASES:
+- discovery: Learning about user's project and basic needs
+- requirements: Gathering detailed specifications
+- refinement: Confirming details and filling gaps
+- ready-to-build: Requirements are complete enough to start building
+
+Keep responses conversational, helpful, and focused on moving the design process forward.`
+}
 
 export async function POST(req: Request) {
   try {
-    const { message } = await req.json()
+    const body: ChatAPIRequest = await req.json()
+    const { message, conversationHistory = [], currentRequirements } = body
 
     if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Invalid request" }, { status: 400 })
+      return NextResponse.json({ error: "Invalid message" }, { status: 400 })
     }
 
     const apiKey = process.env.OPENAI_API_KEY
@@ -16,24 +145,63 @@ export async function POST(req: Request) {
 
     const openai = new OpenAI({ apiKey })
 
-    const response = await openai.responses.create({
-      model: "gpt-5-nano",
-      input: message,
-      instructions: "You are Brad, a friendly and helpful AI web design assistant. Your job is to assist users in designing websites based on their preferences and needs.",
-      reasoning: {
-        effort: "low"
-      },
-      text: {
-        verbosity: "low"
+    // Build messages array with system prompt and conversation history
+    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      {
+        role: "system",
+        content: buildSystemPrompt(conversationHistory, currentRequirements)
       }
+    ]
+
+    // Add recent conversation history
+    conversationHistory.slice(-5).forEach(msg => {
+      messages.push({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text
+      })
     })
 
-    console.log("response", response)
+    // Add the current user message
+    messages.push({
+      role: "user",
+      content: message
+    })
 
-    return NextResponse.json({ text: response.output_text })
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-2024-08-06",
+      messages,
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: "brad_response",
+          schema: bradResponseSchema,
+          strict: true
+        }
+      },
+      temperature: 0.7,
+      max_tokens: 1500
+    })
+
+    const responseText = completion.choices[0]?.message?.content
+    if (!responseText) {
+      throw new Error("No response from OpenAI")
+    }
+
+    const structuredResponse: BradStructuredResponse = JSON.parse(responseText)
+    
+    console.log("Structured response:", structuredResponse)
+
+    return NextResponse.json({ 
+      success: true, 
+      data: structuredResponse 
+    })
+
   } catch (error) {
     console.error("/api/chat error", error)
-    return NextResponse.json({ error: "Server error" }, { status: 500 })
+    return NextResponse.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : "Server error" 
+    }, { status: 500 })
   }
 }
 

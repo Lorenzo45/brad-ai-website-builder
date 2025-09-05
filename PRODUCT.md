@@ -40,9 +40,14 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 - **Memory references**: Special message types that reference previous design decisions
 - **Contextual continuity**: Maintains design context across conversation sessions
 
-#### Smart Reply System
-- **Quick reply suggestions**: Contextual reply options based on current conversation
-- **Dynamic suggestions**: Adaptive quick replies that change based on conversation flow
+#### Smart Questioning & Quick Reply System
+- **OpenAI structured responses**: Uses OpenAI's gpt-4o-2024-08-06 model with structured output schemas
+- **Natural question flow**: Brad asks questions naturally within his conversational responses (one question at a time)
+- **Smart reply generation**: AI generates 3-5 contextual reply options to help users respond quickly
+- **Reply categorization**: Replies are categorized by type (direct-answer, elaboration, alternative, clarification) with color-coded visual indicators
+- **Dynamic suggestions**: Adaptive quick replies that change based on conversation flow and context
+- **Contextual suggestions**: Reply options are specific to Brad's questions (e.g., for "What's this website about?": "Myself", "My business", "A group")
+- **Conversation state tracking**: System tracks conversation phases (discovery, requirements, refinement, ready-to-build) and completion percentage
 - **One-click responses**: Fast interaction patterns for common design requests
 
 #### UI/UX Features
@@ -63,17 +68,13 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 
 ### High Priority - Conversational Agent Core
 
-- [ ] **Smart Questioning System**
-  - [ ] Implement OpenAI's structured response framework
-  - [ ] Generate contextual follow-up questions to gather requirements
-  - [ ] Ask clarifying questions about design preferences, functionality, and scope
-  - [ ] Progressive disclosure of complexity based on user responses
-
-- [ ] **Intelligent Suggested Responses**
-  - [ ] Generate short, relevant clickable response options
-  - [ ] Context-aware suggestions based on current conversation state
-  - [ ] Dynamic suggestion generation using OpenAI structured outputs
-  - [ ] Quick selection for common design patterns and preferences
+- [x] **Smart Questioning & Quick Reply System**
+  - [x] Implement OpenAI's structured response framework
+  - [x] Natural question flow with Brad asking questions in conversational responses
+  - [x] Generate contextual smart reply options to help users respond quickly
+  - [x] Reply categorization with visual indicators (direct-answer, elaboration, alternative, clarification)
+  - [x] Context-aware suggestions based on current conversation state
+  - [x] Progressive disclosure and conversation state tracking
 
 - [ ] **Agent Spec Management**
   - [ ] Tool-based spec reading and writing system
