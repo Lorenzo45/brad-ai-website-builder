@@ -68,9 +68,7 @@ The system tracks the following design requirements through conversational inter
 ### Core Requirements
 - **subject**: The website subject (e.g., company name, personal brand, organization name, or main topic)
 - **subjectName**: The specific name or title (e.g., "Acme Corp", "John's Portfolio", "TechStart Blog")
-- **websiteType**: The type of website (e.g., landing page, portfolio, e-commerce, blog, dashboard, corporate site)
 - **purpose**: The primary purpose or goal of the website
-- **targetAudience**: The intended users or audience for the site
 - **preferredStyleAndInspiration**: Combined field capturing style preferences, design inspiration, and visual direction
 
 ### Content & Functionality

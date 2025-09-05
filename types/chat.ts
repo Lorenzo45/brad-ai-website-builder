@@ -24,7 +24,6 @@ export interface DesignRequirements {
   subject?: string
   subjectName?: string
   purpose?: string
-  targetAudience?: string
   preferredStyleAndInspiration?: string
   colorPreferences?: string[]
   functionalityNeeds?: string[]

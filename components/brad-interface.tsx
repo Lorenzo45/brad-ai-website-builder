@@ -22,6 +22,7 @@ export function BradInterface() {
     designRequirements,
     shouldTransitionToBuild,
     fileInputRef,
+    completenessScore,
     sendMessage,
     handleFileUpload,
     getQuickReplies,
@@ -47,7 +48,7 @@ export function BradInterface() {
   const generateHTML = async () => {
     setIsGeneratingHTML(true)
     
-    // Start the 60-second progress animation
+    // Start the 90-second progress animation
     setBuildProgress(0)
     const progressInterval = setInterval(() => {
       setBuildProgress(prev => {
@@ -55,7 +56,7 @@ export function BradInterface() {
           clearInterval(progressInterval)
           return 100
         }
-        return prev + (100 / 600) // 600 intervals over 60 seconds (100ms each)
+        return prev + (100 / 900) // 900 intervals over 90 seconds (100ms each)
       })
     }, 100)
     
@@ -217,7 +218,7 @@ export function BradInterface() {
                   : `${conversationState.phase === 'discovery' ? 'Learning about your project' : 
                       conversationState.phase === 'requirements' ? 'Gathering specifications' : 
                       conversationState.phase === 'refinement' ? 'Refining details' : 
-                      'Ready to start building'} • ${Math.round(conversationState.completenessScore * 100)}% complete`
+                      'Ready to start building'} • ${Math.round(completenessScore * 100)}% complete`
                 }
               </p>
             </div>

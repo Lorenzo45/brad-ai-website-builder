@@ -35,21 +35,33 @@ export function useBradChat() {
   const [designRequirements, setDesignRequirements] = useState<DesignRequirements>({})
   const [shouldTransitionToBuild, setShouldTransitionToBuild] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [completenessScore, setCompletenessScore] = useState(0)
 
   // Calculate completeness score based on non-null design requirements
-  const calculateCompletenessScore = (): number => {
-    const allFields = ['subject', 'subjectName', 'purpose', 'targetAudience', 'preferredStyleAndInspiration', 'colorPreferences', 'functionalityNeeds', 'contentTypes']
+  const calculateCompletenessScore = (updatedDesignRequirements?: DesignRequirements, updatedConversationState?: ConversationState): number => {
+    const allFields = ['subject', 'subjectName', 'purpose', 'preferredStyleAndInspiration', 'colorPreferences', 'functionalityNeeds', 'contentTypes']
+    
+    const requirements = updatedDesignRequirements || designRequirements
+    const convState = updatedConversationState || conversationState
     
     let completed = 0
     
+    // Check design requirements fields
     allFields.forEach(field => {
-      const value = designRequirements[field as keyof DesignRequirements]
+      const value = requirements[field as keyof DesignRequirements]
       if (value && (typeof value === 'string' ? value.trim() : Array.isArray(value) ? value.length > 0 : true)) {
         completed++
       }
     })
     
-    const score = completed / allFields.length
+    // Check if designType is set
+    if (convState.designType) {
+      completed++
+    }
+    
+    const totalFields = allFields.length + 1 // +1 for designType
+    const score = completed / totalFields
+
     return isNaN(score) ? 0 : score
   }
 
@@ -101,13 +113,16 @@ export function useBradChat() {
     
     if (structuredResponse) {
       // Update conversation state and requirements
-      setConversationState(structuredResponse.conversationState)
-      setDesignRequirements(prev => ({
-        ...prev,
+      const updatedRequirements = {
+        ...designRequirements,
         ...structuredResponse.designRequirements
-      }))
+      }
+      
+      setConversationState(structuredResponse.conversationState)
+      setDesignRequirements(updatedRequirements)
       setSmartReplies(structuredResponse.smartReplies)
       setShouldTransitionToBuild(structuredResponse.shouldTransitionToBuild)
+      setCompletenessScore(calculateCompletenessScore(updatedRequirements, structuredResponse.conversationState))
 
       const bradResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -179,7 +194,7 @@ export function useBradChat() {
     conversationState,
     designRequirements,
     shouldTransitionToBuild,
-    completenessScore: calculateCompletenessScore(),
+    completenessScore,
     fileInputRef,
     sendMessage,
     handleFileUpload,
