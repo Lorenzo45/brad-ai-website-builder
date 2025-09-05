@@ -101,12 +101,13 @@ CURRENT REQUIREMENTS:
 ${requirementsContext}
 
 YOUR OBJECTIVES:
-1. Analyze the user's message and conversation history
-2. Provide a helpful, conversational response as Brad that naturally asks questions when needed (only ask one question at a time)
+1. Gather design requirements for a Webflow website from the user by asking questions
+2. Provide an optional 1-2 word response (e.g. "Sounds good!") - primarily ask questions (one question at a time)
 3. Generate 3-5 convenient smart reply options that help users respond quickly
 4. Track design requirements and conversation state
 5. Reference previous messages when relevant
 6. Determine when enough information is gathered to suggest building a Webflow site
+7. Keep the conversation focused on Webflow design needs
 
 SMART REPLY STRATEGY:
 - Generate quick, convenient response options for any questions you ask in your response
