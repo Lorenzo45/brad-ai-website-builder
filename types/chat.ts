@@ -17,11 +17,12 @@ export interface SmartReply {
 export interface ConversationState {
   phase: "discovery" | "requirements" | "refinement" | "ready-to-build"
   userIntent: string
-  designType?: "landing-page" | "portfolio" | "dashboard" | "mobile-app" | "e-commerce" | "blog" | "other"
+  designType?: "landing-page" | "portfolio" | "dashboard" | "e-commerce" | "blog" | "other"
   completenessScore: number // 0-1 scale, how complete the requirements are
 }
 
 export interface DesignRequirements {
+  subject?: string
   purpose?: string
   targetAudience?: string
   preferredStyleAndInspiration?: string

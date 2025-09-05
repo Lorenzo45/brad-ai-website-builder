@@ -150,7 +150,7 @@ export function useBradChat() {
     if (!lastBradMessage) return []
 
     if (lastBradMessage.text.includes("first thing")) {
-      return ["Landing page", "Portfolio site", "Mobile app", "Dashboard"]
+      return ["Landing page", "Portfolio site", "Dashboard"]
     }
     if (lastBradMessage.text.includes("tell me more")) {
       return ["Show examples", "I need help with colors", "Mobile-first design", "Something modern"]

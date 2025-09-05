@@ -66,7 +66,8 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 The system tracks the following design requirements through conversational interactions to build comprehensive user specifications:
 
 ### Core Requirements
-- **purpose**: The primary purpose or goal of the website/application
+- **subject**: The website subject (e.g., company name, personal brand, organization name, or main topic)
+- **purpose**: The primary purpose or goal of the website
 - **targetAudience**: The intended users or audience for the site
 - **preferredStyleAndInspiration**: Combined field capturing style preferences, design inspiration, and visual direction
 
