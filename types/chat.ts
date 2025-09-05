@@ -14,12 +14,6 @@ export interface SmartReply {
   relevanceScore: number // 0-1 scale, higher = more relevant
 }
 
-export interface ContextReference {
-  messageId: string
-  relevanceScore: number // 0-1 scale
-  contentSnippet: string
-}
-
 export interface ConversationState {
   phase: "discovery" | "requirements" | "refinement" | "ready-to-build"
   userIntent: string
@@ -40,7 +34,6 @@ export interface BradStructuredResponse {
   response: string
   smartReplies: SmartReply[]
   conversationState: ConversationState
-  contextReferences: ContextReference[]
   designRequirements: DesignRequirements
   suggestedActions: string[]
   confidenceScore: number // 0-1 scale

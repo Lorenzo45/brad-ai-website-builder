@@ -40,19 +40,6 @@ const bradResponseSchema = {
       required: ["phase", "userIntent", "designType", "completenessScore"],
       additionalProperties: false
     },
-    contextReferences: {
-      type: "array",
-      items: {
-        type: "object",
-        properties: {
-          messageId: { type: "string" },
-          relevanceScore: { type: "number", minimum: 0, maximum: 1 },
-          contentSnippet: { type: "string" }
-        },
-        required: ["messageId", "relevanceScore", "contentSnippet"],
-        additionalProperties: false
-      }
-    },
     designRequirements: {
       type: "object",
       properties: {
@@ -74,7 +61,6 @@ const bradResponseSchema = {
     "response", 
     "smartReplies", 
     "conversationState", 
-    "contextReferences",
     "designRequirements",
     "suggestedActions", 
     "confidenceScore",
