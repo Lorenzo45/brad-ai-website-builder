@@ -4,7 +4,7 @@ This document serves as the primary source of truth for Brad.ai - defining what 
 
 ## Product Description
 
-Brad.ai is an AI-powered design interface that simulates a personal AI designer experience. The application provides an interactive chat-based workflow for creating and iterating on web designs with real-time feedback and live previews.
+Brad.ai is an AI-powered design interface that simulates a personal AI designer experience. The application provides an interactive chat-based workflow for creating and iterating on Webflow websites with real-time feedback and live previews.
 
 ### Current Features
 
@@ -16,17 +16,17 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 
 #### AI Integration
 - **OpenAI API integration**: Backend API route (`/api/chat`) that processes user messages
-- **Contextual responses**: Brad provides design assistance and guidance based on user input
-- **Low-effort reasoning**: Configured for quick, concise responses optimized for design workflows
+- **Contextual responses**: Brad provides Webflow design assistance and guidance based on user input
+- **Low-effort reasoning**: Configured for quick, concise responses optimized for Webflow design workflows
 
 #### Build Simulation System
 - **Build mode activation**: Toggle between chat and build modes
-- **Animated progress indicators**: Visual progress bars simulating design generation
+- **Animated progress indicators**: Visual progress bars simulating Webflow site generation
 - **Build status updates**: Real-time feedback during simulated build processes
 
 #### Live Preview System
 - **Side-by-side preview**: Split-screen interface showing chat and preview panes
-- **Website preview toggle**: Ability to show/hide generated design previews
+- **Website preview toggle**: Ability to show/hide generated Webflow design previews
 - **Responsive preview**: Mobile-first responsive design preview capabilities
 
 #### Design Mode (Interactive Editing)
@@ -64,6 +64,27 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 - **React 19**: Latest React features and optimizations
 - **Custom hooks architecture**: Reusable logic via `useBradChat` hook
 
+## Design Requirements
+
+The system tracks the following design requirements through conversational interactions to build comprehensive user specifications:
+
+### Core Requirements
+- **purpose**: The primary purpose or goal of the website/application
+- **targetAudience**: The intended users or audience for the site
+- **preferredStyleAndInspiration**: Combined field capturing style preferences, design inspiration, and visual direction
+
+### Content & Functionality
+- **colorPreferences**: Array of preferred colors, color schemes, or color-related requirements
+- **functionalityNeeds**: Array of required features, functionality, and interactive elements
+- **contentTypes**: Array of content types needed (text, images, videos, forms, etc.)
+
+### Technical Approach
+- **Universal device support**: All designs support desktop, mobile, and tablet devices by default (no device priorities)
+- **Requirements gathering**: Collected through natural conversation flow during discovery and requirements phases
+- **Structured tracking**: Requirements stored and tracked via OpenAI's structured response system
+
+These requirements are progressively gathered through Brad's conversational interface and used to inform design decisions and eventual Webflow website generation.
+
 ## Product Roadmap
 
 ### High Priority - Conversational Agent Core
@@ -100,18 +121,18 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
   - [ ] Rich message formatting for design specs
   - [ ] Message threading for complex requirements
 
-### Lower Priority - Code Generation
+### Lower Priority - Webflow Generation
 
-- [ ] **Spec-to-Code Generation**
-  - [ ] Generate functional code based on completed user spec
-  - [ ] Live preview updates with generated code
-  - [ ] Code export functionality
-  - [ ] Basic framework support (React focus initially)
+- [ ] **Spec-to-Webflow Generation**
+  - [ ] Generate Webflow sites based on completed user specifications
+  - [ ] Live preview updates with generated Webflow designs
+  - [ ] Webflow export functionality
+  - [ ] Webflow component library integration
 
 - [ ] **Preview Enhancements**
-  - [ ] Real-time code preview updates
+  - [ ] Real-time Webflow preview updates
   - [ ] Mobile responsive preview modes
-  - [ ] Basic interaction simulation
+  - [ ] Basic Webflow interaction simulation
 
 ### Future Considerations
 
@@ -123,7 +144,7 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 - [ ] **Collaboration**
   - [ ] Spec sharing and collaboration
   - [ ] Version control for design specifications
-  - [ ] Export to common design tools
+  - [ ] Export to Webflow and other design tools
 
 ## Development Workflow
 

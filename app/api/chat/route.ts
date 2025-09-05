@@ -58,17 +58,12 @@ const bradResponseSchema = {
       properties: {
         purpose: { type: ["string", "null"] },
         targetAudience: { type: ["string", "null"] },
-        preferredStyle: { type: ["string", "null"] },
+        preferredStyleAndInspiration: { type: ["string", "null"] },
         colorPreferences: { type: ["array", "null"], items: { type: "string" } },
         functionalityNeeds: { type: ["array", "null"], items: { type: "string" } },
-        contentTypes: { type: ["array", "null"], items: { type: "string" } },
-        devicePriorities: { 
-          type: ["array", "null"], 
-          items: { type: "string", enum: ["desktop", "mobile", "tablet"] }
-        },
-        inspiration: { type: ["string", "null"] }
+        contentTypes: { type: ["array", "null"], items: { type: "string" } }
       },
-      required: ["purpose", "targetAudience", "preferredStyle", "colorPreferences", "functionalityNeeds", "contentTypes", "devicePriorities", "inspiration"],
+      required: ["purpose", "targetAudience", "preferredStyleAndInspiration", "colorPreferences", "functionalityNeeds", "contentTypes"],
       additionalProperties: false
     },
     suggestedActions: { type: "array", items: { type: "string" } },
@@ -97,7 +92,7 @@ function buildSystemPrompt(conversationHistory: Message[], currentRequirements?:
     `Current requirements gathered: ${JSON.stringify(currentRequirements, null, 2)}` : 
     'No requirements gathered yet.'
 
-  return `You are Brad, a friendly and expert AI web design assistant. Your role is to help users design websites by asking smart, contextual questions to understand their needs.
+  return `You are Brad, a friendly and expert AI Webflow design assistant. Your role is to help users design Webflow websites by asking smart, contextual questions to understand their needs.
 
 CONVERSATION CONTEXT:
 ${historyContext}
@@ -111,7 +106,7 @@ YOUR OBJECTIVES:
 3. Generate 3-5 convenient smart reply options that help users respond quickly
 4. Track design requirements and conversation state
 5. Reference previous messages when relevant
-6. Determine when enough information is gathered to suggest building
+6. Determine when enough information is gathered to suggest building a Webflow site
 
 SMART REPLY STRATEGY:
 - Generate quick, convenient response options for any questions you ask in your response
@@ -124,9 +119,9 @@ CONVERSATION PHASES:
 - discovery: Learning about user's project and basic needs
 - requirements: Gathering detailed specifications
 - refinement: Confirming details and filling gaps
-- ready-to-build: Requirements are complete enough to start building
+- ready-to-build: Requirements are complete enough to start building a Webflow site
 
-Keep responses conversational, helpful, and focused on moving the design process forward.`
+Keep responses conversational, helpful, and focused on moving the Webflow design process forward.`
 }
 
 export async function POST(req: Request) {

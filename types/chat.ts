@@ -30,12 +30,10 @@ export interface ConversationState {
 export interface DesignRequirements {
   purpose?: string
   targetAudience?: string
-  preferredStyle?: string
+  preferredStyleAndInspiration?: string
   colorPreferences?: string[]
   functionalityNeeds?: string[]
   contentTypes?: string[]
-  devicePriorities?: ("desktop" | "mobile" | "tablet")[]
-  inspiration?: string
 }
 
 export interface BradStructuredResponse {
