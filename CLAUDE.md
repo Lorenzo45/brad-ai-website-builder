@@ -26,6 +26,8 @@ This is a Next.js 15 application called "Brad.ai" - an AI design interface that 
 - `app/page.tsx`: Main page rendering the Brad interface
 - `app/api/`: API routes for backend functionality
 - `hooks/`: Custom React hooks for shared logic
+- `types/`: TypeScript type definitions and interfaces
+  - `types/chat.ts`: Interfaces for OpenAI structured responses and chat system
 
 ### State Management
 
