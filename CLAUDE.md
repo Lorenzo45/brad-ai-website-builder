@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Next.js 15 application called "Brad.ai" - an AI design interface that simulates a personal AI designer. The project uses React 19, TypeScript, and Tailwind CSS v4, built as part of v0.app explorations for AI-powered design workflows.
 
+**📋 IMPORTANT**: See `PRODUCT.md` for the complete product description and roadmap. This is the primary source of truth for what the application currently does and planned future features.
+
 ## Architecture
 
 - **Frontend**: Next.js 15 with TypeScript and React 19
@@ -46,14 +48,20 @@ npm run build
 
 Note: Don't start the development server, the user has already done this
 
-## Key Features
+## Development Workflow
 
-1. **Chat Interface**: Real-time messaging with Brad AI
-2. **Build Simulation**: Animated progress indicators for design generation
-3. **Live Preview**: Side-by-side preview pane for generated designs
-4. **Design Mode**: Interactive element editing with click-to-modify
-5. **Memory System**: Context-aware responses based on conversation history
-6. **Quick Replies**: Smart reply suggestions based on conversation context
+### Feature Implementation Process
+
+When implementing new features:
+
+1. **Planning Phase**: First update `PRODUCT.md` roadmap with detailed specifications
+2. **Review Process**: Allow user to review and approve the updated roadmap
+3. **Implementation**: Build the feature according to the approved specifications
+4. **Documentation Update**: Update both `PRODUCT.md` Product Description and roadmap sections upon completion
+
+### Key Features
+
+Refer to `PRODUCT.md` for the complete list of current features and detailed descriptions.
 
 ## Configuration Notes
 
