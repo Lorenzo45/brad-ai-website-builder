@@ -236,17 +236,19 @@ export function BradInterface() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto py-4 pl-4 pr-2 space-y-4">
           {messages.map((message) => (
             <motion.div
               key={message.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex w-full ${message.sender === "user" ? "justify-end" : "justify-start"}`}
             >
               <div className="relative group">
                 <div
-                  className={`max-w-[70%] min-w-[120px] ${
+                  className={`${
+                    message.sender === "user" ? "max-w-[85%] ml-auto" : "max-w-[70%]"
+                  } min-w-[120px] ${
                     message.sender === "user"
                       ? "bg-amber-500 text-black"
                       : message.isBuildUpdate
@@ -266,7 +268,9 @@ export function BradInterface() {
                       <span className="text-xs text-cyan-400">Building update</span>
                     </div>
                   )}
-                  <p className="text-sm leading-relaxed break-words whitespace-pre-wrap">{message.text}</p>
+                  <p className={`text-sm leading-relaxed break-words whitespace-pre-wrap ${
+                    message.sender === "user" ? "text-right" : "text-left"
+                  }`}>{message.text}</p>
                 </div>
               </div>
             </motion.div>
