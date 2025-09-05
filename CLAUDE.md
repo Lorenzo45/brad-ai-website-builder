@@ -22,6 +22,8 @@ This is a Next.js 15 application called "Brad.ai" - an AI design interface that 
 - `components/theme-provider.tsx`: Theme management
 - `app/layout.tsx`: Root layout with font configuration
 - `app/page.tsx`: Main page rendering the Brad interface
+- `app/api/`: API routes for backend functionality
+- `hooks/`: Custom React hooks for shared logic
 
 ### State Management
 
@@ -35,18 +37,14 @@ The application uses React hooks for state management:
 ## Development Commands
 
 ```bash
-# Development server
-pnpm dev
+# Lint code
+npm run lint
 
 # Build the application
-pnpm build
-
-# Start production server
-pnpm start
-
-# Lint code
-pnpm lint
+npm run build
 ```
+
+Note: Don't start the development server, the user has already done this
 
 ## Key Features
 
@@ -71,7 +69,3 @@ pnpm lint
 - Custom hook patterns for state management
 - Responsive design with mobile-first approach
 - Dark theme implementation with custom CSS variables
-
-## Deployment
-
-The project is configured for automatic deployment to Vercel and stays in sync with v0.app changes. The build process ignores TypeScript and ESLint errors to maintain deployment compatibility with the v0.app workflow.

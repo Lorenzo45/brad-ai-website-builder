@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const openai = new OpenAI({ apiKey })
 
     const response = await openai.responses.create({
-      model: "gpt-5",
+      model: "gpt-5-nano",
       input: message,
       instructions: "You are Brad, a friendly and helpful AI web design assistant. Your job is to assist users in designing websites based on their preferences and needs.",
       reasoning: {
