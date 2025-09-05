@@ -108,7 +108,7 @@ CONVERSATION PHASES:
 - refinement: Confirming details and filling gaps
 - ready-to-build: Requirements are complete enough to start building a Webflow site
 
-Keep responses conversational, helpful, and focused on moving the Webflow design process forward.`
+Keep responses brief and focused on completing the Webflow design process.`
 }
 
 export async function POST(req: Request) {

@@ -9,31 +9,28 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 ### Current Features
 
 #### Core Chat Interface
-- **Real-time messaging**: Interactive chat with Brad AI using OpenAI's GPT-5-nano model
+- **Real-time messaging**: Interactive chat with Brad AI using OpenAI's GPT-4o model
 - **Typing indicators**: Visual feedback showing when Brad is processing responses
 - **Message history**: Persistent conversation tracking throughout the session
 - **File upload**: Support for uploading files via paperclip attachment button
 
 #### AI Integration
-- **OpenAI API integration**: Backend API route (`/api/chat`) that processes user messages
-- **Contextual responses**: Brad provides Webflow design assistance and guidance based on user input
-- **Low-effort reasoning**: Configured for quick, concise responses optimized for Webflow design workflows
+- **OpenAI API integration**: Backend API route (`/api/chat`) that processes user messages and gathers design requirements
+- **HTML Generation API**: Backend route (`/api/generate-html`) that uses GPT-5-nano to generate complete HTML websites
+- **Contextual responses**: Brad provides design assistance and guidance based on user input
+- **Requirements gathering**: AI collects and structures design requirements through natural conversation
 
-#### Build Simulation System
-- **Build mode activation**: Toggle between chat and build modes
-- **Animated progress indicators**: Visual progress bars simulating Webflow site generation
-- **Build status updates**: Real-time feedback during simulated build processes
+#### Real Website Generation System
+- **Build readiness detection**: Automatically detects when enough requirements have been gathered to build a website
+- **GPT-5-nano HTML generation**: Uses advanced AI model to create complete, responsive HTML websites
+- **Real-time progress tracking**: Visual progress indicators during actual website generation
+- **Live HTML preview**: Generated websites are displayed in iframe for immediate preview
 
 #### Live Preview System
-- **Side-by-side preview**: Split-screen interface showing chat and preview panes
-- **Website preview toggle**: Ability to show/hide generated Webflow design previews
-- **Responsive preview**: Mobile-first responsive design preview capabilities
-
-#### Design Mode (Interactive Editing)
-- **Click-to-modify**: Interactive element selection within preview pane
-- **Element highlighting**: Visual feedback when hovering over editable elements
-- **Design prompt input**: Dedicated input for making specific design modifications
-- **Element selection state**: Track and manage selected elements for editing
+- **Side-by-side preview**: Split-screen interface showing chat and generated website preview
+- **Generated HTML rendering**: Real websites created by AI displayed via iframe
+- **Responsive design**: All generated websites include mobile-first responsive design
+- **Empty state handling**: Clear visual feedback when no website has been generated yet
 
 #### Memory System
 - **Project memory**: Context-aware responses based on conversation history
@@ -103,10 +100,13 @@ These requirements are progressively gathered through Brad's conversational inte
   - [ ] Spec validation and completeness checking
   - [ ] Progress tracking of requirements gathering
 
-- [ ] **Build Readiness Detection**
-  - [ ] Analyze spec completeness to determine when ready to build
-  - [ ] Proactively suggest moving to build phase when appropriate
-  - [ ] Confirmation workflow before transitioning to code generation
+- [x] **Build Readiness Detection & HTML Generation**
+  - [x] Analyze spec completeness to determine when ready to build
+  - [x] Proactively trigger build phase when requirements are complete
+  - [x] GPT-5-nano powered HTML generation system
+  - [x] Real-time website generation with progress tracking
+  - [x] Live preview of generated HTML websites via iframe
+  - [x] Error handling and fallback messaging for generation failures
 
 ### Medium Priority - Visual Design Tools
 

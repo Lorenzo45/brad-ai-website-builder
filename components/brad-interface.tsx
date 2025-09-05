@@ -19,6 +19,7 @@ export function BradInterface() {
     showQuickReplies,
     smartReplies,
     conversationState,
+    designRequirements,
     shouldTransitionToBuild,
     fileInputRef,
     sendMessage,
@@ -31,10 +32,8 @@ export function BradInterface() {
   const [buildProgress, setBuildProgress] = useState(0)
   const [showWebsitePreview, setShowWebsitePreview] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [isDesignMode, setIsDesignMode] = useState(false)
-  const [selectedElement, setSelectedElement] = useState<string | null>(null)
-  const [designPrompt, setDesignPrompt] = useState("")
-  const [hoveredElement, setHoveredElement] = useState<string | null>(null)
+  const [generatedHTML, setGeneratedHTML] = useState<string | null>(null)
+  const [isGeneratingHTML, setIsGeneratingHTML] = useState(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -45,97 +44,98 @@ export function BradInterface() {
   }, [messages])
 
 
-  const handleElementClick = (elementType: string, elementId: string) => {
-    if (isDesignMode) {
-      setSelectedElement(`${elementType}-${elementId}`)
-    }
-  }
+  const generateHTML = async () => {
+    setIsGeneratingHTML(true)
+    
+    // Start the 60-second progress animation
+    setBuildProgress(0)
+    const progressInterval = setInterval(() => {
+      setBuildProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval)
+          return 100
+        }
+        return prev + (100 / 600) // 600 intervals over 60 seconds (100ms each)
+      })
+    }, 100)
+    
+    try {
+      const response = await fetch("/api/generate-html", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ designRequirements }),
+      })
 
-  const getPromptPlaceholder = () => {
-    if (!hoveredElement) return "Click an element to modify it..."
-
-    const prompts = {
-      nav: "Change the navigation style, colors, or layout...",
-      hero: "Modify the hero section text, spacing, or background...",
-      button: "I don't like this button, make it more rounded...",
-      footer: "Update the footer design, links, or styling...",
-      sidebar: "Change the sidebar navigation or colors...",
-      stats: "Modify the stats cards layout or styling...",
-      features: "Update the features section design...",
-      work: "Change the work portfolio grid or styling...",
-    }
-
-    const elementType = hoveredElement.split("-")[0]
-    return prompts[elementType as keyof typeof prompts] || "Describe how you'd like to change this element..."
-  }
-
-  const handleDesignChange = () => {
-    if (!designPrompt.trim() || !selectedElement) return
-
-    const designMessage: Message = {
-      id: Date.now().toString(),
-      text: `🎨 Design change for ${selectedElement.replace("-", " ")}: ${designPrompt}`,
-      sender: "user",
-    }
-
-    addMessage(designMessage)
-    setDesignPrompt("")
-    setSelectedElement(null)
-
-    setTimeout(() => {
-      const bradResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        text: `Perfect! I've updated the ${selectedElement?.replace("-", " ")} based on your feedback. The changes are looking fresh! ✨`,
-        sender: "brad",
+      const result = await response.json()
+      
+      if (result.success && result.html) {
+        // Clear the interval and set to 100%
+        clearInterval(progressInterval)
+        setBuildProgress(100)
+        
+        setGeneratedHTML(result.html)
+        
+        // Show success message and reveal preview
+        const successMessage: Message = {
+          id: `build-success-${Date.now()}`,
+          text: "Boom! 💥 Your website is ready! Check it out on the right - what do you think?",
+          sender: "brad",
+          isBuildUpdate: true,
+        }
+        addMessage(successMessage)
+        
+        setTimeout(() => setShowWebsitePreview(true), 500)
+      } else {
+        console.error("HTML generation failed:", result.error)
+        clearInterval(progressInterval)
+        setBuildProgress(0)
+        
+        const errorMessage: Message = {
+          id: `build-error-${Date.now()}`,
+          text: "Oops! I ran into an issue generating your website. Can you try describing your project again?",
+          sender: "brad",
+          isBuildUpdate: true,
+        }
+        addMessage(errorMessage)
+        
+        setIsBuildMode(false)
       }
-      addMessage(bradResponse)
-    }, 1500)
+    } catch (error) {
+      console.error("Network error during HTML generation:", error)
+      clearInterval(progressInterval)
+      setBuildProgress(0)
+      
+      const errorMessage: Message = {
+        id: `build-error-${Date.now()}`,
+        text: "Sorry, I'm having trouble connecting to generate your website. Please try again in a moment.",
+        sender: "brad",
+        isBuildUpdate: true,
+      }
+      addMessage(errorMessage)
+      
+      setIsBuildMode(false)
+    } finally {
+      setIsGeneratingHTML(false)
+    }
   }
 
-
-
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const startBuildingProcess = () => {
     setIsBuildMode(true)
     setBuildProgress(0)
     setShowWebsitePreview(false)
+    setGeneratedHTML(null) // Reset any previous HTML
 
-    const buildSteps = [
-      { progress: 20, message: "Alright, firing up my design brain... *cracks knuckles* 🧠", delay: 1000 },
-      {
-        progress: 40,
-        message: "Setting up the foundation - I'm thinking clean structure with some spicy animations ✨",
-        delay: 2000,
-      },
-      { progress: 60, message: "Adding the visual magic... this color palette is *chef's kiss* 🎨", delay: 2500 },
-      { progress: 80, message: "Fine-tuning the interactions - users are gonna love this flow! 🚀", delay: 2000 },
-      {
-        progress: 100,
-        message: "Boom! 💥 Check out what we've got cooking on the right. What do you think?",
-        delay: 1500,
-      },
-    ]
+    // Show initial build message
+    const buildMessage: Message = {
+      id: `build-${Date.now()}`,
+      text: "Perfect! I have all the details I need. Let me start building your website now... ✨",
+      sender: "brad",
+      isBuildUpdate: true,
+    }
+    addMessage(buildMessage)
 
-    buildSteps.forEach((step, index) => {
-      setTimeout(
-        () => {
-          setBuildProgress(step.progress)
-          const buildMessage: Message = {
-            id: `build-${Date.now()}-${index}`,
-            text: step.message,
-            sender: "brad",
-            isBuildUpdate: true,
-          }
-          addMessage(buildMessage)
-
-          if (step.progress === 100) {
-            setTimeout(() => setShowWebsitePreview(true), 1000)
-          }
-        },
-        buildSteps.slice(0, index + 1).reduce((acc, curr) => acc + curr.delay, 0),
-      )
-    })
+    // Start HTML generation immediately
+    generateHTML()
   }
 
   const handleSendMessage = async (messageText?: string) => {
@@ -144,107 +144,43 @@ export function BradInterface() {
 
     await sendMessage(textToSend)
     setPrompt("")
-
-    // TODO: Add this back in
-    // if (response.shouldStartBuilding) {
-    //   setTimeout(() => startBuildingProcess(keywords), 1000)
-    // }
   }
+
+  // Trigger build when requirements are ready
+  useEffect(() => {
+    if (shouldTransitionToBuild && !isBuildMode) {
+      startBuildingProcess()
+    }
+  }, [shouldTransitionToBuild, isBuildMode]) // startBuildingProcess is stable, no need to include
 
 
 
 
 
   const renderWebsitePreview = () => {
-    const baseClasses = "w-full h-full bg-white overflow-hidden overflow-y-auto"
-    const elementClasses = isDesignMode
-      ? "cursor-pointer hover:ring-2 hover:ring-cyan-500 hover:ring-opacity-75 transition-all duration-200"
-      : ""
+    // If we have generated HTML, render it
+    if (generatedHTML) {
+      return (
+        <div className="w-full h-full bg-white overflow-hidden overflow-y-auto">
+          <iframe
+            srcDoc={generatedHTML}
+            className="w-full h-full border-0"
+            title="Generated Website Preview"
+            sandbox="allow-scripts"
+          />
+        </div>
+      )
+    }
 
-    // Landing page
+    // Show empty state when no HTML is generated
     return (
-      <div className={baseClasses}>
-        <nav
-          className={`bg-white px-8 py-6 flex items-center justify-between ${elementClasses} ${selectedElement === "nav-header" ? "ring-2 ring-cyan-500" : ""}`}
-          onClick={() => handleElementClick("nav", "header")}
-          onMouseEnter={() => setHoveredElement("nav-header")}
-          onMouseLeave={() => setHoveredElement(null)}
-        >
-          <div className="font-medium text-lg text-black">Brand</div>
-          <div className="flex gap-8 text-sm text-gray-600">
-            <a href="#" className="hover:text-black transition-colors">
-              Features
-            </a>
-            <a href="#" className="hover:text-black transition-colors">
-              Pricing
-            </a>
-            <a href="#" className="hover:text-black transition-colors">
-              Contact
-            </a>
+      <div className="w-full h-full bg-gray-50 flex items-center justify-center">
+        <div className="text-center text-gray-500">
+          <div className="w-16 h-16 bg-gray-200 rounded-lg mx-auto mb-4 flex items-center justify-center">
+            <Monitor className="w-8 h-8 text-gray-400" />
           </div>
-        </nav>
-
-        <div
-          className={`bg-white px-8 py-32 text-center ${elementClasses} ${selectedElement === "hero-section" ? "ring-2 ring-cyan-500" : ""}`}
-          onClick={() => handleElementClick("hero", "section")}
-          onMouseEnter={() => setHoveredElement("hero-section")}
-          onMouseLeave={() => setHoveredElement(null)}
-        >
-          <h1 className="text-5xl font-light text-black mb-6 max-w-3xl mx-auto leading-tight">
-            Simple solutions for complex problems
-          </h1>
-          <p className="text-gray-600 text-xl mb-8 max-w-2xl mx-auto">
-            Clean, minimal, and effective tools for the modern workflow
-          </p>
-          <button
-            className={`bg-black text-white px-8 py-3 text-sm font-medium hover:bg-gray-800 transition-colors ${elementClasses} ${selectedElement === "button-cta" ? "ring-2 ring-cyan-500" : ""}`}
-            onClick={(e) => {
-              e.stopPropagation()
-              handleElementClick("button", "cta")
-            }}
-            onMouseEnter={() => setHoveredElement("button-cta")}
-            onMouseLeave={() => setHoveredElement(null)}
-          >
-            Get Started
-          </button>
+          <p className="text-sm">Website preview will appear here</p>
         </div>
-
-        <div
-          className={`bg-white px-8 py-24 border-t border-gray-100 ${elementClasses} ${selectedElement === "features-section" ? "ring-2 ring-cyan-500" : ""}`}
-          onClick={() => handleElementClick("features", "section")}
-          onMouseEnter={() => setHoveredElement("features-section")}
-          onMouseLeave={() => setHoveredElement(null)}
-        >
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl font-light text-black mb-16 text-center">Features</h2>
-            <div className="grid grid-cols-3 gap-12">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-black rounded-full mx-auto mb-4"></div>
-                <h3 className="text-lg font-medium text-black mb-2">Simple</h3>
-                <p className="text-gray-600 text-sm">Clean and intuitive interface</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-black rounded-full mx-auto mb-4"></div>
-                <h3 className="text-lg font-medium text-black mb-2">Fast</h3>
-                <p className="text-gray-600 text-sm">Lightning quick performance</p>
-              </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-black rounded-full mx-auto mb-4"></div>
-                <h3 className="text-lg font-medium text-black mb-2">Reliable</h3>
-                <p className="text-gray-600 text-sm">Built to last and scale</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <footer
-          className={`bg-white border-t border-gray-100 px-8 py-12 text-center ${elementClasses} ${selectedElement === "footer-section" ? "ring-2 ring-cyan-500" : ""}`}
-          onClick={() => handleElementClick("footer", "section")}
-          onMouseEnter={() => setHoveredElement("footer-section")}
-          onMouseLeave={() => setHoveredElement(null)}
-        >
-          <p className="text-gray-500 text-sm">© 2025 Brand. All rights reserved.</p>
-        </footer>
       </div>
     )
   }
@@ -275,7 +211,7 @@ export function BradInterface() {
               </h2>
               <p className="text-xs text-gray-400">
                 {isBuildMode 
-                  ? `Building your project • ${buildProgress}% complete` 
+                  ? `Building your project` 
                   : shouldTransitionToBuild
                   ? "Ready to build • All requirements gathered"
                   : `${conversationState.phase === 'discovery' ? 'Learning about your project' : 
@@ -467,93 +403,7 @@ export function BradInterface() {
       </motion.div>
 
       <AnimatePresence>
-        {isDesignMode && isBuildMode && showWebsitePreview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="absolute inset-0 bg-[#0a0a0a] z-50 flex flex-col"
-          >
-            {/* Design mode header */}
-            <div className="bg-[#111111] border-b border-[#222222] p-4 flex items-center justify-between flex-shrink-0">
-              <div className="flex items-center gap-3">
-                <Monitor className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-white font-medium">Design Mode</h3>
-                <div className="text-xs text-gray-400">Click elements to modify them</div>
-              </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  setIsDesignMode(false)
-                  setSelectedElement(null)
-                  setHoveredElement(null)
-                }}
-                className="bg-cyan-500 text-black border-cyan-500 hover:bg-cyan-600 hover:text-black"
-              >
-                Exit Design Mode
-              </Button>
-            </div>
-
-            {/* Canvas with dotted background */}
-            <div className="flex-1 relative overflow-hidden">
-              <div
-                className="absolute inset-0 opacity-20"
-                style={{
-                  backgroundImage: `radial-gradient(circle, #666 1px, transparent 1px)`,
-                  backgroundSize: "24px 24px",
-                  backgroundPosition: "12px 12px",
-                }}
-              />
-              <div className="relative z-10 h-full overflow-y-auto">{renderWebsitePreview()}</div>
-            </div>
-
-            {/* Design prompt input - always visible at bottom */}
-            <motion.div className="bg-[#111111] border-t border-[#222222] p-4 flex-shrink-0" layout>
-              {selectedElement ? (
-                <div className="w-full">
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="text-xs text-cyan-400">Selected:</span>
-                    <span className="text-xs text-white capitalize">{selectedElement.replace("-", " ")}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Input
-                      value={designPrompt}
-                      onChange={(e) => setDesignPrompt(e.target.value)}
-                      placeholder={getPromptPlaceholder()}
-                      className="bg-[#1a1a1a] border-[#333] text-gray-300 placeholder:text-gray-500 text-sm focus-visible:ring-1 focus-visible:ring-cyan-500"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault()
-                          handleDesignChange()
-                        }
-                      }}
-                    />
-                    <Button
-                      size="sm"
-                      onClick={handleDesignChange}
-                      disabled={!designPrompt.trim()}
-                      className="bg-cyan-500 hover:bg-cyan-600 text-black px-4 flex-shrink-0"
-                    >
-                      Update
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="w-full text-center">
-                  <p className="text-gray-400 text-sm">
-                    {hoveredElement ? getPromptPlaceholder() : "Hover over elements to see modification options"}
-                  </p>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {isBuildMode && !isDesignMode && (
+        {isBuildMode && (
           <motion.div
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: "50%", opacity: 1 }}
@@ -567,16 +417,6 @@ export function BradInterface() {
                 <h3 className="text-white font-medium">Live Preview</h3>
               </div>
               <div className="flex items-center gap-2">
-                {showWebsitePreview && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setIsDesignMode(true)}
-                    className="bg-[#1a1a1a] border-[#333] text-gray-300 hover:text-white hover:border-cyan-500 hover:bg-[#2a2a2a] text-xs"
-                  >
-                    Design Mode
-                  </Button>
-                )}
                 <div className="text-xs text-gray-400">{showWebsitePreview ? "Ready" : "Building..."}</div>
                 <div
                   className={`w-2 h-2 rounded-full ${showWebsitePreview ? "bg-green-400" : "bg-cyan-400 animate-pulse"}`}
@@ -601,7 +441,9 @@ export function BradInterface() {
                         <Code className="w-8 h-8 text-white" />
                       </div>
                       <h3 className="text-xl font-semibold text-white mb-2">Building Your Vision</h3>
-                      <p className="text-gray-400 mb-4">Brad is crafting something amazing for you...</p>
+                      <p className="text-gray-400 mb-4">
+                        {isGeneratingHTML ? "Generating custom HTML based on your requirements..." : "Brad is crafting something amazing for you..."}
+                      </p>
 
                       <div className="w-full bg-[#1a1a1a] rounded-full h-2 mb-4">
                         <motion.div
@@ -612,7 +454,9 @@ export function BradInterface() {
                         />
                       </div>
 
-                      <div className="text-sm text-cyan-400">{buildProgress}% Complete</div>
+                      <div className="text-sm text-cyan-400">
+                        {isGeneratingHTML ? "Generating HTML..." : "Building..."}
+                      </div>
                     </div>
                   </div>
                 </div>
