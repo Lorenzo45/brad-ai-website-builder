@@ -8,6 +8,10 @@ Brad.ai is a conversational interface for creating websites through chat. Users 
 
 This project was built as a take-home test for Webflow.
 
+## Demo Video
+
+https://www.loom.com/share/626e62bffb6145efa0446f6e546d736b?sid=b4835ca2-22d4-4d28-993e-742e0cb92e53
+
 ## Features
 
 - **Chat Interface** - Real-time messaging with typing indicators and message history
