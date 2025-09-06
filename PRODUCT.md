@@ -85,13 +85,11 @@ These requirements are progressively gathered through Brad's conversational inte
 
 ## Product Roadmap
 
-### High Priority - Conversational Agent Core
+### High Priority - Multi-Modal and Agentic Input
 
-- **Agent Spec Management**
-  - Tool-based spec reading and writing system
-  - Internal todo/checklist management for the agent
-  - Spec validation and completeness checking
-  - Progress tracking of requirements gathering
+- **Agentic Multi-Modal Input**
+  - Image input - parse image for style/color input
+  - Agentic web browsing - browse the website for style/color input
 
 ### Medium Priority - Visual Design Tools
 
@@ -122,9 +120,8 @@ These requirements are progressively gathered through Brad's conversational inte
 ### Future Considerations
 
 - **Advanced AI Integration**
-  - Image reference analysis for design inspiration
   - Multi-modal responses (text + visual mockups)
-  - Style transfer capabilities
+  - Image and video generation for website contents
 
 - **Collaboration**
   - Spec sharing and collaboration
