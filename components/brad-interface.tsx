@@ -223,17 +223,6 @@ export function BradInterface() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-[#2a2a2a]">
-              <Phone className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-[#2a2a2a]">
-              <Video className="w-4 h-4" />
-            </Button>
-            <Button size="icon" variant="ghost" className="text-gray-400 hover:text-white hover:bg-[#2a2a2a]">
-              <MoreVertical className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 pl-4 pr-2 space-y-4">
