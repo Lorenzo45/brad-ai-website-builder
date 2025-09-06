@@ -59,7 +59,7 @@ When implementing new features:
 1. **Planning Phase**: First update `PRODUCT.md` roadmap with detailed specifications
 2. **Review Process**: Allow user to review and approve the updated roadmap
 3. **Implementation**: Build the feature according to the approved specifications
-4. **Documentation Update**: Update both `PRODUCT.md` Product Description and roadmap sections upon completion
+4. **Documentation Update**: ALWAYS update `PRODUCT.md` Product Description and roadmap sections upon completion if product behavior changes
 
 ### Key Features
 

@@ -177,7 +177,7 @@ export function useBradChat() {
     if (lastBradMessage.text.includes("first thing")) {
       return ["Landing page", "Portfolio site", "E-Commerce", "Blog"]
     }
-    return ["Sounds great!", "Tell me more", "Show me examples", "Let's do it"]
+    return []
   }
 
   return {

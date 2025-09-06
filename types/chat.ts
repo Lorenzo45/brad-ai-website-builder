@@ -35,8 +35,6 @@ export interface BradStructuredResponse {
   smartReplies: SmartReply[]
   conversationState: ConversationState
   designRequirements: DesignRequirements
-  suggestedActions: string[]
-  confidenceScore: number // 0-1 scale
   shouldTransitionToBuild: boolean
 }
 

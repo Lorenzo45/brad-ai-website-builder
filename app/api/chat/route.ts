@@ -53,8 +53,6 @@ const bradResponseSchema = {
       required: ["subject", "subjectName", "purpose", "preferredStyleAndInspiration", "colorPreferences", "functionalityNeeds", "contentTypes", "designType"],
       additionalProperties: false
     },
-    suggestedActions: { type: "array", items: { type: "string" } },
-    confidenceScore: { type: "number", minimum: 0, maximum: 1 },
     shouldTransitionToBuild: { type: "boolean" }
   },
   required: [
@@ -62,8 +60,6 @@ const bradResponseSchema = {
     "smartReplies", 
     "conversationState", 
     "designRequirements",
-    "suggestedActions", 
-    "confidenceScore",
     "shouldTransitionToBuild"
   ],
   additionalProperties: false
@@ -97,7 +93,7 @@ YOUR OBJECTIVES:
 
 SMART REPLY STRATEGY:
 - Generate quick, convenient response options for any questions you ask in your response
-- Do not generate replies for open-ended questions like "What is the name of your business?"
+- Do not generate replies for open-ended questions like "What is the name of your business?" OR if we do not ask for a reply (e.g. when we start building)
 - Make replies specific to the context (e.g., if asking about website purpose: "Myself", "My business", "A group")
 - Prioritize the most common/likely user responses
 - Keep replies concise and actionable
@@ -110,7 +106,7 @@ CONVERSATION PHASES:
 
 DETERMINING BUILD READINESS:
 - Consider the requirements complete when most core fields (designType, subject, subjectName, purpose, preferredStyleAndInspiration) are filled
-- Don't require every single field to be complete, but ensure you have enough information to build a meaningful website
+- Don't require every field if the user wants to build early (fill in the gaps if needed)
 - Do not start building until the user explicitly agrees we are ready to build
 
 Keep responses brief and focused on completing the Webflow design process.`
