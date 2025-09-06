@@ -38,11 +38,10 @@ export function useBradChat() {
   const [completenessScore, setCompletenessScore] = useState(0)
 
   // Calculate completeness score based on non-null design requirements
-  const calculateCompletenessScore = (updatedDesignRequirements?: DesignRequirements, updatedConversationState?: ConversationState): number => {
-    const allFields = ['subject', 'subjectName', 'purpose', 'preferredStyleAndInspiration', 'colorPreferences', 'functionalityNeeds', 'contentTypes']
+  const calculateCompletenessScore = (updatedDesignRequirements?: DesignRequirements): number => {
+    const allFields = ['designType', 'subject', 'subjectName', 'purpose', 'preferredStyleAndInspiration', 'colorPreferences', 'functionalityNeeds', 'contentTypes']
     
     const requirements = updatedDesignRequirements || designRequirements
-    const convState = updatedConversationState || conversationState
     
     let completed = 0
     
@@ -54,12 +53,7 @@ export function useBradChat() {
       }
     })
     
-    // Check if designType is set
-    if (convState.designType) {
-      completed++
-    }
-    
-    const totalFields = allFields.length + 1 // +1 for designType
+    const totalFields = allFields.length
     const score = completed / totalFields
 
     return isNaN(score) ? 0 : score
@@ -122,7 +116,7 @@ export function useBradChat() {
       setDesignRequirements(updatedRequirements)
       setSmartReplies(structuredResponse.smartReplies)
       setShouldTransitionToBuild(structuredResponse.shouldTransitionToBuild)
-      setCompletenessScore(calculateCompletenessScore(updatedRequirements, structuredResponse.conversationState))
+      setCompletenessScore(calculateCompletenessScore(updatedRequirements))
 
       const bradResponse: Message = {
         id: (Date.now() + 1).toString(),

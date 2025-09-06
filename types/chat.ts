@@ -17,10 +17,10 @@ export interface SmartReply {
 export interface ConversationState {
   phase: "discovery" | "requirements" | "confirmation" | "ready-to-build"
   userIntent: string
-  designType?: "landing-page" | "portfolio" | "dashboard" | "e-commerce" | "blog" | "other"
 }
 
 export interface DesignRequirements {
+  designType?: "landing-page" | "portfolio" | "dashboard" | "e-commerce" | "blog" | "other"
   subject?: string
   subjectName?: string
   purpose?: string

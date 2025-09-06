@@ -30,18 +30,18 @@ const bradResponseSchema = {
           type: "string",
           enum: ["discovery", "requirements", "confirmation", "ready-to-build"]
         },
-        userIntent: { type: "string" },
-        designType: {
-          type: "string",
-          enum: ["landing-page", "portfolio", "dashboard", "e-commerce", "blog", "other"]
-        }
+        userIntent: { type: "string" }
       },
-      required: ["phase", "userIntent", "designType"],
+      required: ["phase", "userIntent"],
       additionalProperties: false
     },
     designRequirements: {
       type: "object",
       properties: {
+        designType: {
+          type: ["string", "null"],
+          enum: ["landing-page", "portfolio", "dashboard", "e-commerce", "blog", "other", null]
+        },
         subject: { type: ["string", "null"] },
         subjectName: { type: ["string", "null"] },
         purpose: { type: ["string", "null"] },
@@ -50,7 +50,7 @@ const bradResponseSchema = {
         functionalityNeeds: { type: ["array", "null"], items: { type: "string" } },
         contentTypes: { type: ["array", "null"], items: { type: "string" } }
       },
-      required: ["subject", "subjectName", "purpose", "preferredStyleAndInspiration", "colorPreferences", "functionalityNeeds", "contentTypes"],
+      required: ["subject", "subjectName", "purpose", "preferredStyleAndInspiration", "colorPreferences", "functionalityNeeds", "contentTypes", "designType"],
       additionalProperties: false
     },
     suggestedActions: { type: "array", items: { type: "string" } },
@@ -93,11 +93,11 @@ YOUR OBJECTIVES:
 4. Provide an optional 1-2 word response (e.g. "Sounds good!") - primarily ask questions (one question at a time)
 5. Generate 3-5 convenient smart reply options that help users respond quickly
 6. Track design requirements and conversation state
-7. Suggest building a Webflow site when requirements are sufficiently complete
+7. Suggest building a Webflow site when requirements are sufficiently complete and user confirms details
 
 SMART REPLY STRATEGY:
 - Generate quick, convenient response options for any questions you ask in your response
-- Include direct answers, elaborations, alternatives, and clarification options
+- Do not generate replies for open-ended questions like "What is the name of your business?"
 - Make replies specific to the context (e.g., if asking about website purpose: "Myself", "My business", "A group")
 - Prioritize the most common/likely user responses
 - Keep replies concise and actionable
@@ -105,12 +105,13 @@ SMART REPLY STRATEGY:
 CONVERSATION PHASES:
 - discovery: Learning about user's project and basic needs
 - requirements: Gathering detailed specifications
-- confirmation: Showing user all requirements and asking for additions/modifications
+- confirmation: Listing gathered requirements and asking for additions/modifications
 - ready-to-build: Requirements are complete enough to start building a Webflow site
 
 DETERMINING BUILD READINESS:
-- Consider the requirements complete when most core fields (subject, subjectName, purpose, preferredStyleAndInspiration) are filled and designType is set
+- Consider the requirements complete when most core fields (designType, subject, subjectName, purpose, preferredStyleAndInspiration) are filled
 - Don't require every single field to be complete, but ensure you have enough information to build a meaningful website
+- Do not start building until the user explicitly agrees we are ready to build
 
 Keep responses brief and focused on completing the Webflow design process.`
 }
