@@ -87,65 +87,49 @@ These requirements are progressively gathered through Brad's conversational inte
 
 ### High Priority - Conversational Agent Core
 
-- [x] **Smart Questioning & Quick Reply System**
-  - [x] Implement OpenAI's structured response framework
-  - [x] Natural question flow with Brad asking questions in conversational responses
-  - [x] Generate contextual smart reply options to help users respond quickly
-  - [x] Reply categorization with visual indicators (direct-answer, elaboration, alternative, clarification)
-  - [x] Context-aware suggestions based on current conversation state
-  - [x] Progressive disclosure and conversation state tracking
-
-- [ ] **Agent Spec Management**
-  - [ ] Tool-based spec reading and writing system
-  - [ ] Internal todo/checklist management for the agent
-  - [ ] Spec validation and completeness checking
-  - [ ] Progress tracking of requirements gathering
-
-- [x] **Build Readiness Detection & HTML Generation**
-  - [x] Analyze spec completeness to determine when ready to build
-  - [x] Proactively trigger build phase when requirements are complete
-  - [x] GPT-5-nano powered HTML generation system
-  - [x] Real-time website generation with progress tracking
-  - [x] Live preview of generated HTML websites via iframe
-  - [x] Error handling and fallback messaging for generation failures
+- **Agent Spec Management**
+  - Tool-based spec reading and writing system
+  - Internal todo/checklist management for the agent
+  - Spec validation and completeness checking
+  - Progress tracking of requirements gathering
 
 ### Medium Priority - Visual Design Tools
 
-- [ ] **Color System**
-  - [ ] Color preview functionality in chat messages
-  - [ ] Interactive color picker component
-  - [ ] AI-generated color palette suggestions
-  - [ ] Color harmony and accessibility checking
+- **Color System**
+  - Color preview functionality in chat messages
+  - Interactive color picker component
+  - AI-generated color palette suggestions
+  - Color harmony and accessibility checking
 
-- [ ] **Enhanced Messaging**
-  - [ ] Code block rendering with syntax highlighting
-  - [ ] Rich message formatting for design specs
-  - [ ] Message threading for complex requirements
+- **Enhanced Messaging**
+  - Code block rendering with syntax highlighting
+  - Rich message formatting for design specs
+  - Message threading for complex requirements
 
 ### Lower Priority - Webflow Generation
 
-- [ ] **Spec-to-Webflow Generation**
-  - [ ] Generate Webflow sites based on completed user specifications
-  - [ ] Live preview updates with generated Webflow designs
-  - [ ] Webflow export functionality
-  - [ ] Webflow component library integration
+- **Spec-to-Webflow Generation**
+  - Generate Webflow sites based on completed user specifications
+  - Live preview updates with generated Webflow designs
+  - Webflow export functionality
+  - Webflow component library integration
 
-- [ ] **Preview Enhancements**
-  - [ ] Real-time Webflow preview updates
-  - [ ] Mobile responsive preview modes
-  - [ ] Basic Webflow interaction simulation
+- **Preview Enhancements**
+  - Real-time Webflow preview updates
+  - Mobile responsive preview modes
+  - Basic Webflow interaction simulation
 
 ### Future Considerations
 
-- [ ] **Advanced AI Integration**
-  - [ ] Image reference analysis for design inspiration
-  - [ ] Multi-modal responses (text + visual mockups)
-  - [ ] Style transfer capabilities
+- **Advanced AI Integration**
+  - Image reference analysis for design inspiration
+  - Multi-modal responses (text + visual mockups)
+  - Style transfer capabilities
 
-- [ ] **Collaboration**
-  - [ ] Spec sharing and collaboration
-  - [ ] Version control for design specifications
-  - [ ] Export to Webflow and other design tools
+- **Collaboration**
+  - Spec sharing and collaboration
+  - Version control for design specifications
+  - Export to Webflow and other design tools
 
 ## Development Workflow
 
