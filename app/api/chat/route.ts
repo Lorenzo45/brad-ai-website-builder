@@ -28,7 +28,7 @@ const bradResponseSchema = {
       properties: {
         phase: { 
           type: "string",
-          enum: ["discovery", "requirements", "refinement", "ready-to-build"]
+          enum: ["discovery", "requirements", "confirmation", "ready-to-build"]
         },
         userIntent: { type: "string" },
         designType: {
@@ -105,7 +105,7 @@ SMART REPLY STRATEGY:
 CONVERSATION PHASES:
 - discovery: Learning about user's project and basic needs
 - requirements: Gathering detailed specifications
-- refinement: Confirming details and filling gaps
+- confirmation: Showing user all requirements and asking for additions/modifications
 - ready-to-build: Requirements are complete enough to start building a Webflow site
 
 DETERMINING BUILD READINESS:

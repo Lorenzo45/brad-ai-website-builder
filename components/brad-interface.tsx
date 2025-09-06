@@ -217,7 +217,7 @@ export function BradInterface() {
                   ? "Ready to build • All requirements gathered"
                   : `${conversationState.phase === 'discovery' ? 'Learning about your project' : 
                       conversationState.phase === 'requirements' ? 'Gathering specifications' : 
-                      conversationState.phase === 'refinement' ? 'Refining details' : 
+                      conversationState.phase === 'confirmation' ? 'Confirming requirements' : 
                       'Ready to start building'} • ${Math.round(completenessScore * 100)}% complete`
                 }
               </p>

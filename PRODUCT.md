@@ -44,7 +44,7 @@ Brad.ai is an AI-powered design interface that simulates a personal AI designer 
 - **Reply categorization**: Replies are categorized by type (direct-answer, elaboration, alternative, clarification) with color-coded visual indicators
 - **Dynamic suggestions**: Adaptive quick replies that change based on conversation flow and context
 - **Contextual suggestions**: Reply options are specific to Brad's questions (e.g., for "What's this website about?": "Myself", "My business", "A group")
-- **Conversation state tracking**: System tracks conversation phases (discovery, requirements, refinement, ready-to-build) and completion percentage
+- **Conversation state tracking**: System tracks conversation phases (discovery, requirements, confirmation, ready-to-build) and completion percentage
 - **One-click responses**: Fast interaction patterns for common design requests
 
 #### UI/UX Features
